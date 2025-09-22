@@ -1,0 +1,125 @@
+.profile-container {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+    font-family: "Open Sans", sans-serif;
+}
+
+.profile-card {
+    background: #FDFCFA;
+    border: 2px solid #3A8EFF;
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1rem;
+    border-radius: 50%;
+    background-color: #59C9D2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: 700;
+    color: #FDFCFA;
+}
+
+.profile-username {
+    font-size: 22px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.profile-email {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.profile-roles {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 1.5rem;
+}
+
+.profile-edit-btn {
+    background-color: #3A8EFF;
+    color: #FDFCFA;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.profile-edit-btn:hover {
+    background-color: #2f6ed1;
+}
+
+.profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+    text-align: left;
+}
+
+.profile-form label {
+    font-size: 14px;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.profile-form input {
+    padding: 0.5rem;
+    border: 1px solid #FDFCFA;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.profile-form-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.profile-save-btn {
+    background-color: #3A8EFF;
+    color: #FDFCFA;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.profile-save-btn:hover {
+    background-color: #2f6ed1;
+}
+
+.profile-cancel-btn {
+    background-color: #D7372E;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.profile-cancel-btn:hover {
+    background-color: #b52b24;
+}

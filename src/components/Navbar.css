@@ -1,0 +1,80 @@
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #FDFCFA; /* светлый фон из палитры */
+    padding: 0.5rem 1.5rem;
+    border-bottom: 2px solid #3A8EFF; /* акцентная линия */
+    font-family: "Open Sans", sans-serif;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    height: 32px;
+    margin-right: 0.5rem;
+}
+
+.brand {
+    font-size: 20px;
+    font-weight: 700;
+    color: #3A8EFF;
+}
+
+.navbar-center {
+    display: flex;
+    gap: 1rem;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.nav-link:hover {
+    color: #3A8EFF;
+}
+
+.navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.username {
+    font-weight: 600;
+    color: #333;
+}
+
+.logout-btn {
+    background-color: #D7372E;
+    color: #FDFCFA;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.logout-btn:hover {
+    background-color: #b52b24;
+}
+
+.username-link {
+    text-decoration: none;
+    font-weight: 600;
+    color: #3A8EFF; /* акцентный синий из палитры */
+    transition: color 0.2s, text-decoration 0.2s;
+    margin-right: 1rem;
+}
+
+.username-link:hover {
+    color: #2f6ed1; /* чуть темнее при наведении */
+    text-decoration: underline;
+}
