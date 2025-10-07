@@ -25,7 +25,9 @@ export default function Navbar() {
     if (token) {
         try {
             const payload = parseJwt(token);
-            username = payload.sub;
+
+            // 👇 теперь sub = id, а имя лежит в username
+            username = payload.username;
             roles = payload.roles || [];
         } catch {
             username = "";

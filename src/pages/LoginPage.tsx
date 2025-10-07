@@ -10,14 +10,31 @@ export default function LoginPage() {
     async function handleLogin(e: React.FormEvent) {
         e.preventDefault();
         try {
-            const tokens = await login({ username, password });
-            localStorage.setItem("accessToken", tokens.accessToken);
-            localStorage.setItem("refreshToken", tokens.refreshToken);
+            const response = await login({ username, password });
+            const { accessToken, refreshToken, userId } = response;
 
-            // Декодируем accessToken, чтобы узнать роли
-            const payload = JSON.parse(atob(tokens.accessToken.split(".")[1]));
+            localStorage.setItem("accessToken", accessToken);
+            localStorage.setItem("refreshToken", refreshToken);
+
+            // если бэк вернул userId → сохраняем
+            if (userId) {
+                localStorage.setItem("childId", userId.toString());
+            } else {
+                // иначе достаём из токена
+                const payload = JSON.parse(atob(accessToken.split(".")[1]));
+                if (payload.sub) {
+                    localStorage.setItem("childId", payload.sub.toString());
+                }
+            }
+
+            // роли и имя пользователя из токена
+            const payload = JSON.parse(atob(accessToken.split(".")[1]));
             const roles: string[] = payload.roles || [];
+            const usernameFromToken: string = payload.username;
 
+            localStorage.setItem("username", usernameFromToken);
+
+            // редирект по роли
             if (roles.includes("ROLE_MODERATOR")) {
                 navigate("/users");
             } else if (roles.includes("ROLE_PARENT")) {

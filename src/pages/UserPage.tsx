@@ -14,11 +14,15 @@ export default function UserPage() {
     let username = "";
     let email = "";
     let roles: string[] = [];
+    let userId = "";
 
     if (token) {
         try {
             const payload = parseJwt(token);
-            username = payload.sub;
+
+            // 👇 теперь sub = id, username лежит отдельно
+            userId = payload.sub;
+            username = payload.username || "";
             email = payload.email || "";
             roles = payload.roles || [];
         } catch {
@@ -42,9 +46,10 @@ export default function UserPage() {
             <main className="profile-container">
                 <div className="profile-card">
                     <div className="profile-avatar">
-                        {username.charAt(0).toUpperCase()}
+                        {username ? username.charAt(0).toUpperCase() : "?"}
                     </div>
                     <h2 className="profile-username">{username}</h2>
+                    <p className="profile-id">ID: {userId}</p>
 
                     {!isEditing ? (
                         <>

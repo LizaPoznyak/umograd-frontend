@@ -25,7 +25,10 @@
     padding: 1rem;
     text-align: center;
     transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
 }
+
 
 .task-card:hover {
     transform: translateY(-4px);
@@ -60,7 +63,15 @@
     cursor: pointer;
     font-weight: 500;
     transition: background-color 0.2s;
+    margin-top: auto;
+    margin-bottom: 0;
+    align-self: center;
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+    margin-top: 1rem;
 }
+
+
 
 .task-btn:hover {
     background-color: #3A8EFF;
