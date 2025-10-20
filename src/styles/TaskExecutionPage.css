@@ -1,0 +1,153 @@
+.task-exec {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 40px auto;
+    max-width: 600px;
+    padding: 20px;
+    background: rgba(255,255,255,0.4);
+    border-radius: 20px;
+}
+
+.task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+}
+
+.task-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #545d61;
+}
+
+.attempts-heart {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #ffcdde;
+    border-radius: 20px;
+    padding: 4px 10px;
+}
+
+.heart {
+    font-size: 18px;
+}
+
+.attempts-count {
+    font-weight: 700;
+    font-size: 16px;
+    color: #545d61;
+}
+
+.task-card {
+    width: 90%;                 /* уже, чем основной блок */
+    max-width: 500px;
+    margin: 0 auto 20px auto;   /* центрируем и даём отступ снизу */
+    background: rgba(255,255,255,0.8);
+    border-radius: 20px;
+    padding: 20px;
+}
+
+.task-question {
+    font-weight: 600;
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #545d61;
+}
+
+.options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.option {
+    font-size: 16px;
+    font-weight: 500;
+    color: #545d61;
+    cursor: pointer;
+}
+
+.text-answer {
+    width: 100%;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+.options.images {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.image-option img {
+    width: 120px;
+    height: 120px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 2px solid transparent;
+    cursor: pointer;
+}
+
+.image-option input:checked + img {
+    border-color: #ff7f82;
+}
+
+.error {
+    color: red;
+    margin-bottom: 10px;
+}
+
+.task-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+.finish-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 30px;
+    gap: 10px;
+
+    width: 147px;
+    height: 42px;
+
+    background: linear-gradient(90deg, #7FCA68 0%, #A3DB8F 100%);
+    border-radius: 30px;
+    border: none;
+
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: #fff;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+.finish-btn:hover {
+    opacity: 0.9;
+}
+
+.giveup-btn {
+    background: none;
+    border: 2px solid #ff7f82;
+    color: #ff7f82;
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.giveup-btn:hover {
+    background: #ff7f82;
+    color: white;
+}

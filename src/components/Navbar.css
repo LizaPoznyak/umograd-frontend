@@ -1,80 +1,283 @@
 .navbar {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    background-color: #FDFCFA; /* светлый фон из палитры */
-    padding: 0.5rem 1.5rem;
-    border-bottom: 2px solid #3A8EFF; /* акцентная линия */
-    font-family: "Open Sans", sans-serif;
+    align-items: center;
+    height: 80px;
+    width: 100%;
+    padding: 0 20px;
+    font-family: 'Nunito', sans-serif;
+    box-sizing: border-box;
 }
 
+/* Адаптивность */
+@media (max-width: 1024px) {
+    .navbar {
+        flex-wrap: wrap;
+        height: auto;
+        padding: 10px 15px;
+        gap: 15px;
+    }
+    .navbar-center {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+    }
+    .brand {
+        order: 2;
+    }
+    .navbar-right {
+        order: 4;
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+.navigation {
+    display: flex;
+    flex-direction: row;
+    gap: 25px;
+}
+
+/* Левая часть */
 .navbar-left {
     display: flex;
     align-items: center;
+    gap: 25px;
 }
 
+/* Логотип */
+.logo-circle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 45px;
+    height: 45px;
+    background: rgba(255, 255, 255, 0.8);
+    outline: 3px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50px;
+}
 .logo {
-    height: 32px;
-    margin-right: 0.5rem;
+    width: 31px;
+    height: 28px;
 }
 
+/* Название */
 .brand {
-    font-size: 20px;
-    font-weight: 700;
-    color: #3A8EFF;
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 33px;
+    color: #545D61;
+    margin-right: 90px;
 }
 
+/* Центр — навигация */
 .navbar-center {
     display: flex;
-    gap: 1rem;
+    align-items: center;
+    gap: 15px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 24px;
+    padding: 3px 6.5px;
+    height: 45px;
 }
-
-.nav-link {
+.nav-item {
+    font-weight: 600;
+    font-size: 14px;
+    color: #98A0A4;
     text-decoration: none;
-    color: #333;
-    font-weight: 500;
-    transition: color 0.2s;
+    border-radius: 27px;
+    padding: 11px 18px;
+}
+/* Подсветка при наведении */
+.nav-item:hover {
+    background: rgba(255, 255, 255, 0.6);
+    color: #545D61;
+    padding: 11px 18px;
+}
+.nav-item.active {
+    background: rgba(255, 255, 255, 0.8);
+    color: #545D61;
+    padding: 11px 18px;
 }
 
-.nav-link:hover {
-    color: #3A8EFF;
-}
-
+/* Правая часть */
 .navbar-right {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 25px;
+    position: relative;
 }
 
+/* Выпадающие окна */
+.dropdown {
+    position: absolute;
+    top: 55px; /* чуть ниже блока */
+    right: 0;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    padding: 10px;
+    z-index: 1000;
+}
+
+/* Уведомления */
+.notif-block {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.8);
+    outline: 3px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50px;
+    padding: 0 8px 0 5px;
+    height: 44.5px;
+}
+.notif-icon {
+    cursor: pointer;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+.notif-text {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    color: #98A0A4;
+}
+.dropdown-notif {
+    right: auto; /* чтобы выпадало под уведомлениями */
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 5px 10px;
+    gap: 3px;
+
+    position: absolute;
+    width: 250px;
+
+    background: rgba(255, 255, 255, 0.8);
+    outline: 3px solid rgba(255, 255, 255, 0.4);
+    border-radius: 30px;
+
+}
+.notif-item {
+    width: 240px;
+    padding: 8px 5px;
+    font-size: 14px;
+    color: #545D61;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notif-item:last-child {
+    border-bottom: none;
+}
+
+.notif-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notif-close img {
+    width: 8px;
+    height: 8px;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+/* Профиль */
+.profile-block {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.8);
+    outline: 3px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50px;
+    padding: 0 10px 0 5px;
+    height: 44.5px;
+}
+.avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
+}
 .username {
     font-weight: 600;
-    color: #333;
+    font-size: 14px;
+    color: #98A0A4;
 }
 
-.logout-btn {
-    background-color: #D7372E;
-    color: #FDFCFA;
-    border: none;
-    padding: 0.4rem 0.8rem;
-    border-radius: 4px;
+/* Кнопка меню */
+.menu-icon {
+    width: 44.5px;
+    height: 44.5px;
+    object-fit: contain;
+    background: none;
+}
+.logout-circle {
+    width: 44.5px;
+    height: 44.5px;
+    outline: 3px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.4);
     cursor: pointer;
-    font-weight: 500;
-    transition: background-color 0.2s;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+.dropdown-menu {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 5px 10px;
+    gap: 5px;
+    margin-top: 10px;
+    position: absolute;
+    width: 94px;
+    background: rgba(255, 255, 255, 0.8);
+    outline: 3px solid rgba(255, 255, 255, 0.4);
+    border-radius: 30px;
 
-.logout-btn:hover {
-    background-color: #b52b24;
 }
-
-.username-link {
-    text-decoration: none;
-    font-weight: 600;
-    color: #3A8EFF; /* акцентный синий из палитры */
-    transition: color 0.2s, text-decoration 0.2s;
-    margin-right: 1rem;
+.dropdown-item {
+    display: flex;
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 400;
+    text-align: left;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #FF7F82;
+    border-radius: 20px;
 }
-
-.username-link:hover {
-    color: #2f6ed1; /* чуть темнее при наведении */
-    text-decoration: underline;
+.dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+.notif-block:hover,
+.profile-block:hover,
+.logout-circle:hover {
+    background: rgba(255, 255, 255, 0.6);
+    transition: background 0.2s ease;
+}
+.notif-block.active .notif-icon,
+.logout-circle.active .menu-icon {
+    filter: brightness(1.05);
 }

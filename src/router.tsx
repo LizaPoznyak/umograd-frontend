@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
-import Layout from "./components/Layout";
+// import Layout from "./components/Layout";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import UsersPage from "./pages/UsersPage";
@@ -9,12 +9,13 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import TasksPage from "./pages/TasksPage";
 import UserPage from "./pages/UserPage";
 import TasksAdminPage from "./pages/TasksAdminPage";
-import TaskExecutionPage from "./pages/TaskExecutionPage"; // 👈 добавляем
+import TaskExecutionPage from "./pages/TaskExecutionPage";
+import AchievementsPage from "./pages/AchievementsPage.tsx"; // 👈 добавляем
 
 export const router = createBrowserRouter([
     {
         path: "/",
-        element: <Layout />,
+        // element: <Layout />,
         children: [
             { index: true, element: <LoginPage /> },
             { path: "register", element: <RegisterPage /> },
@@ -83,6 +84,19 @@ export const router = createBrowserRouter([
                     <ProtectedRoute
                         element={<TasksAdminPage />}
                         allowedRoles={["ROLE_MODERATOR"]}
+                    />
+                ),
+            },
+            {
+                path: "achievements",
+                element: (
+                    <ProtectedRoute
+                        element={<AchievementsPage/>}
+                        allowedRoles={[
+                            "ROLE_MODERATOR",
+                            "ROLE_PARENT",
+                            "ROLE_CHILD",
+                        ]}
                     />
                 ),
             },

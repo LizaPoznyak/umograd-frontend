@@ -1,0 +1,140 @@
+.login-title {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 32px;
+    font-weight: bold;
+    color: #545D61;
+    font-family: 'Nunito', sans-serif;
+}
+.login-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap:5px;
+    width: 398px;
+    margin: 100px auto;
+    padding: 40px 0;
+}
+
+/* Поля ввода */
+.login-input {
+    width: 398px;
+    height: 42px;
+    padding: 10px 15px;
+    border: 1px solid #BEBEBE;
+    border-radius: 15px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #545D61;
+    box-sizing: border-box;
+}
+
+.login-input::placeholder {
+    color: #98A0A4;
+    font-weight: 600;
+}
+
+.login-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    width: 398px;
+}
+
+/* Ссылка "Забыли пароль?" */
+.login-forgo-container {
+    width: 398px;
+    align-items: flex-start;
+}
+.login-forgot {
+    font-size: 14px;
+    font-weight: 600;
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+.login-forgot:hover {
+    text-decoration: underline;
+}
+
+/* Контейнер кнопки и ссылки */
+.login-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 398px;
+    gap: 60px;
+    margin-top: 35px;
+}
+
+.login-actions {
+    display: flex;
+    align-items: flex-end;
+    width: 398px;
+    position: relative;
+}
+
+/* Кнопка "Войти" */
+.login-button {
+    padding: 10px 30px;
+    border: none;
+    border-radius: 30px;
+    background: linear-gradient(90deg, #689ECA 0%, #8FDADB 100%);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    transition: transform 0.1s ease, opacity 0.2s ease;
+
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.login-button:hover {
+    opacity: 0.8;
+}
+
+.login-button:active {
+    transform: translateX(-50%) scale(0.97);
+}
+
+/* Ссылка "Регистрация" */
+.login-register {
+    margin-left: auto;
+    font-size: 14px;
+    font-weight: 600;
+    color: #FFFFFF;
+    text-decoration: none;
+    font-family: 'Nunito', sans-serif;
+}
+
+.login-register:hover {
+    text-decoration: underline;
+}
+
+/* Адаптивность */
+@media (max-width: 480px) {
+    .login-form {
+        width: 100%;
+        padding: 20px;
+    }
+
+    .login-input,
+    .login-actions {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .login-title {
+        font-size: 24px;
+        margin-top: 40px;
+    }
+
+    .login-button {
+        font-size: 14px;
+        padding: 8px 20px;
+    }
+}

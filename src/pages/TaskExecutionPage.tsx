@@ -1,5 +1,9 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import Navbar from "../components/Navbar.tsx";
+import "../components/Layout.css";
+import Footer from "../components/Footer.tsx";
+import "../styles/TaskExecutionPage.css";
 
 type TaskContentDto = {
     type: string;       // "choice" | "text"
@@ -98,91 +102,114 @@ export default function TaskExecutionPage() {
     if (!task) return <p>Загрузка...</p>;
 
     return (
-        <main>
-            <h2>{task.title}</h2>
-            <p>{task.description}</p>
-
-            <form>
-                <p>{task.content.question}</p>
-
-                {(task.content.type.toLowerCase() === "quiz" || task.content.type.toLowerCase() === "multiple_choice") && task.content.options && (
-                    task.content.options.map((opt, idx) => (
-                        <label key={idx} style={{ display: "block", marginBottom: "0.5rem" }}>
-                            <input
-                                type="radio"
-                                name="answer"
-                                value={opt}
-                                checked={selected === opt}
-                                onChange={(e) => setSelected(e.target.value)}
-                            />
-                            {opt}
-                        </label>
-                    ))
-                )}
-
-                {task.content.type.toLowerCase() === "text" && (
-                    <input
-                        type="text"
-                        value={selected}
-                        onChange={(e) => setSelected(e.target.value)}
-                        placeholder="Введи свой ответ"
-                        style={{ width: "100%", padding: "0.5rem", marginTop: "0.5rem" }}
-                    />
-                )}
-
-                {task.content.type.toLowerCase() === "image" && task.content.options && (
-                    <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-                        {task.content.options.map((opt, idx) => (
-                            <label key={idx} style={{ display: "inline-block", cursor: "pointer" }}>
-                                <input
-                                    type="radio"
-                                    name="answer"
-                                    value={opt}
-                                    checked={selected === opt}
-                                    onChange={(e) => setSelected(e.target.value)}
-                                    style={{ display: "none" }}
-                                />
-                                <img
-                                    src={opt}
-                                    alt={`Вариант ${idx + 1}`}
-                                    style={{
-                                        width: "120px",
-                                        height: "120px",
-                                        objectFit: "cover",
-                                        border: selected === opt ? "3px solid blue" : "1px solid gray",
-                                        borderRadius: "8px"
-                                    }}
-                                />
-                            </label>
-                        ))}
+        <div className="app-layout">
+            <Navbar/>
+            <main className="app-main task-exec">
+                <div className="task-header">
+                    <h2 className="task-title">{task.title}</h2>
+                    <div className="attempts-heart">
+                        <span className="heart">❤️</span>
+                        <span className="attempts-count">{attempts}</span>
                     </div>
-                )}
+                </div>
 
-            </form>
+                <div className="task-card">
+                    <p className="task-question">{task.content.question}</p>
 
-            {message && (
-                <p style={{ color: "red", marginTop: "0.5rem" }}>
-                    {message}
-                </p>
-            )}
+                    {(task.content.type.toLowerCase() === "quiz" ||
+                            task.content.type.toLowerCase() === "multiple_choice") &&
+                        task.content.options && (
+                            <div className="options">
+                                {task.content.options.map((opt, idx) => (
+                                    <label key={idx} className="option">
+                                        <input
+                                            type="radio"
+                                            name="answer"
+                                            value={opt}
+                                            checked={selected === opt}
+                                            onChange={(e) => setSelected(e.target.value)}
+                                        />
+                                        {opt}
+                                    </label>
+                                ))}
+                            </div>
+                        )}
 
-            <div style={{ marginTop: "1rem" }}>
-                <button onClick={handleFinish} disabled={submitting}>
-                    Завершить
-                </button>
-                {attempts >= 3 && (
+                    {task.content.type.toLowerCase() === "text" && (
+                        <input
+                            type="text"
+                            className="text-answer"
+                            value={selected}
+                            onChange={(e) => setSelected(e.target.value)}
+                            placeholder="Введи свой ответ"
+                        />
+                    )}
+
+                    {task.content.type.toLowerCase() === "image" &&
+                        task.content.options && (
+                            <div className="options images">
+                                {task.content.options.map((opt, idx) => (
+                                    <label key={idx} className="image-option">
+                                        <input
+                                            type="radio"
+                                            name="answer"
+                                            value={opt}
+                                            checked={selected === opt}
+                                            onChange={(e) => setSelected(e.target.value)}
+                                        />
+                                        <img src={opt} alt={`Вариант ${idx + 1}`}/>
+                                    </label>
+                                ))}
+                            </div>
+                        )}
+                </div>
+
+                {/*моковое типо может быть много вопросов*/}
+                <div className="task-card">
+                    <p className="task-question">{task.content.question}</p>
+
+                    {(task.content.type.toLowerCase() === "quiz" ||
+                            task.content.type.toLowerCase() === "multiple_choice") &&
+                        task.content.options && (
+                            <div className="options">
+                                {task.content.options.map((opt, idx) => (
+                                    <label key={idx} className="option">
+                                        <input
+                                            type="radio"
+                                            name="answer"
+                                            value={opt}
+                                            checked={selected === opt}
+                                            onChange={(e) => setSelected(e.target.value)}
+                                        />
+                                        {opt}
+                                    </label>
+                                ))}
+                            </div>
+                        )}
+                </div>
+
+                {message && <p className="error">{message}</p>}
+
+                <div className="task-actions">
                     <button
-                        onClick={handleGiveUp}
-                        style={{ marginLeft: "1rem", color: "red" }}
+                        className="finish-btn"
+                        onClick={handleFinish}
                         disabled={submitting}
                     >
-                        Сдаться
+                        Завершить
                     </button>
-                )}
-                <span style={{ marginLeft: "1rem" }}>
-                    Попыток: <strong>{attempts}</strong>
-                </span>
-            </div>
-        </main>
+                    {attempts >= 3 && (
+                        <button
+                            className="giveup-btn"
+                            onClick={handleGiveUp}
+                            disabled={submitting}
+                        >
+                            Сдаться
+                        </button>
+                    )}
+                </div>
+            </main>
+            <Footer/>
+        </div>
     );
 }

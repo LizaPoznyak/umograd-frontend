@@ -1,0 +1,130 @@
+.child-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 40px auto;
+    max-width: 740px;
+    gap: 20px;
+}
+.child-container {
+    display: flex;
+    flex-direction: column;
+    padding: 0px;
+    gap: 10px;
+    width: 740px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 20px;
+}
+/* Заголовки */
+.child-greeting {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+}
+.child-text {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 32px;
+    color: #545D61;
+    margin: 0;
+    text-align: center;
+}
+.child-subtitle {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+    font-size: 24px;
+    color: #98A0A4;
+    margin: 0;
+    text-align: center;
+}
+
+/* Поиск */
+.search-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 93%;
+    height: 30px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 27px;
+    padding: 5px 10px;
+    margin: 15px auto;
+}
+.search-bar input {
+    border: none;
+    outline: none;
+    flex: 1;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: 'Nunito', sans-serif;
+    color: #545D61;
+    background: transparent;
+}
+.search-icon {
+    padding-top: 5px;
+    padding-left: 5px;
+    color: #98A0A4;
+}
+
+/* Контейнер заданий */
+.quests-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    width: 100%;
+    background: rgba(255,255,255,0.85);
+    border-radius: 27px;
+    padding: 20px;
+    justify-content: flex-start;
+}
+
+/* Карточка задания */
+.quest-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 348px;
+    height: 107px;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid #fff;
+    border-radius: 30px;
+    padding: 10px;
+}
+.quest-img {
+    width: 87px;
+    height: 87px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.quest-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+.quest-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #6F7376;
+    margin: 0;
+}
+.quest-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    font-weight: 600;
+    color: #8F9A9D;
+}
+.quest-start {
+    background: none;
+    border: none;
+    font-size: 16px;
+    font-weight: 700;
+    color: #FF7F82;
+    cursor: pointer;
+}
+.quest-start:hover {
+    color: #e96a6c;
+}

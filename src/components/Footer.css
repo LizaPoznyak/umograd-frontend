@@ -1,47 +1,9 @@
 .footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #FDFCFA; /* светлый фон из палитры */
-    border-top: 2px solid #3A8EFF; /* акцентная линия */
-    padding: 0.8rem 1.5rem;
-    font-family: "Open Sans", sans-serif;
-    margin-top: 2rem;
-}
-
-.footer-left {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.footer-logo {
-    height: 28px;
-}
-
-.footer-brand {
-    font-size: 18px;
-    font-weight: 700;
-    color: #3A8EFF;
-}
-
-.footer-center {
-    display: flex;
-    gap: 1rem;
-}
-
-.footer-link {
-    text-decoration: none;
-    color: #333;
-    font-weight: 500;
-    transition: color 0.2s;
-}
-
-.footer-link:hover {
-    color: #3A8EFF;
-}
-
-.footer-right {
+    position: fixed;          /* фиксируем внизу экрана */
+    right: 10px;              /* отступ справа */
+    bottom: 10px;             /* отступ снизу */
     font-size: 14px;
-    color: #666666;
+    color: #545D61;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;         /* bold */
 }

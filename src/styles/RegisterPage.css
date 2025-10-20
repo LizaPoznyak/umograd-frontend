@@ -1,0 +1,239 @@
+.register-title {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 32px;
+    font-weight: bold;
+    color: #545D61;
+    font-family: 'Nunito', sans-serif;
+}
+
+/* Root form container (from Figma: Frame 44) */
+.register-form {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 47px;
+    padding: 30px;
+    width: 744px;
+    min-height: 422px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 30px;
+    margin: 40px auto;
+    box-sizing: border-box;
+}
+
+/* Left: avatar upload field (replaces image block) */
+.register-avatar {
+    width: 228px;
+    height: 290px;
+    border-radius: 92px;
+    background: rgba(255, 255, 255, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #545D61;
+    cursor: pointer;
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.register-avatar:hover {
+    background: rgba(255, 255, 255, 0.8);
+    opacity: 0.95;
+}
+
+/* Preview image inside avatar field */
+.register-avatar-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Right: fields column (Figma: Frame 38 / 41) */
+.register-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    width: 409px;
+}
+
+/* Input fields (42px height, rounded 15px) */
+.register-input {
+    width: 100%;
+    height: 42px;
+    padding: 10px 15px;
+    border: 1px solid #BEBEBE;
+    border-radius: 15px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #545D61;
+    box-sizing: border-box;
+    background: #FFFFFF;
+}
+
+.register-input::placeholder {
+    color: #98A0A4;
+    font-weight: 600;
+}
+
+/* Контейнер чекбокса */
+.register-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #FFFFFF;
+    cursor: pointer;
+    position: relative;
+}
+
+/* Скрываем стандартный чекбокс */
+.register-checkbox input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+/* Кастомный квадрат */
+.register-checkbox .checkmark {
+    width: 21px;
+    height: 22px;
+    background-color: #6AA2CB;
+    border-radius: 6px;
+    display: inline-block;
+    position: relative;
+    flex-shrink: 0;
+}
+
+/* Галочка */
+.register-checkbox input[type="checkbox"]:checked + .checkmark::after {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 3px;
+    width: 5px;
+    height: 10px;
+    border: solid #FFFFFF; /* белая галочка */
+    border-radius: 2px;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+}
+
+/* Actions row: button + login link (Figma: Frame 40/39) */
+.register-actions {
+    display: flex;
+    align-items: flex-end; /* нижнее выравнивание по краю */
+    justify-content: flex-end;
+    gap: 60px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* Primary button "Зарегистрироваться" (221x42 from Figma) */
+.register-button {
+    padding: 10px 30px;
+    min-width: 221px;
+    height: 42px;
+    border: none;
+    border-radius: 30px;
+    background: linear-gradient(90deg, #689ECA 0%, #8FDADB 100%);
+    color: #FFFFFF;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    transition: transform 0.1s ease, opacity 0.2s ease;
+}
+
+.register-button:hover {
+    opacity: 0.92;
+}
+
+.register-button:active {
+    transform: scale(0.97);
+}
+
+/* Link "Вход" (14px, underline) */
+.register-login {
+    font-size: 14px;
+    font-weight: 600;
+    color: #FFFFFF;
+    text-decoration: none;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+}
+
+.register-login:hover {
+    text-decoration: underline;
+}
+
+/* Edge autofill handling: keep placeholder style */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #545D61;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+    .register-form {
+        width: 90%;
+    }
+}
+
+@media (max-width: 768px) {
+    .register-form {
+        flex-direction: column;
+        gap: 20px;
+        width: 92%;
+        padding: 24px;
+    }
+
+    .register-avatar {
+        width: 100%;
+        height: 220px;
+        border-radius: 30px;
+    }
+
+    .register-fields {
+        width: 100%;
+    }
+
+    .register-actions {
+        justify-content: center;
+        gap: 30px;
+    }
+
+    .register-button {
+        min-width: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .register-title {
+        font-size: 24px;
+        margin-top: 16px;
+    }
+
+    .register-form {
+        width: 94%;
+        padding: 20px;
+    }
+
+    .register-button {
+        padding: 8px 22px;
+        min-width: 180px;
+        height: 40px;
+    }
+}

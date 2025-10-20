@@ -1,0 +1,239 @@
+.tasks-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.tasks-container {
+    padding: 20px;
+    margin-top: 60px;
+    margin-bottom: 60px;
+    width: 100%;
+    max-width: 736px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 20px;
+    box-sizing: border-box;
+}
+
+.tasks-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;          /* было 10px 14px — теперь как у списка */
+    gap: 20px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 20px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+}
+
+/* Вкладки */
+/* Tabs */
+.tabs {
+    display: flex;
+    gap: 20px;
+}
+.tab {
+    font-weight: 600;
+    font-size: 14px;
+    color: #98a0a4;
+    cursor: pointer;
+    padding-bottom: 3px;
+    border-bottom: 2px solid transparent;
+}
+.tab.active {
+    color: #837374;
+    border-color: #837374;
+}
+
+/* Filter */
+.filter-box {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+/* Заголовок и сброс */
+.filter-header {
+    display: flex;
+    justify-content: space-between; /* "Фильтрация" слева, "Убрать ×" справа */
+    align-items: center;
+}
+
+.filter-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: #837374;
+}
+.filter-reset {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #837374;
+    cursor: pointer;
+}
+.filter-reset .close {
+    font-size: 18px;
+    line-height: 1;
+}
+
+/* Difficulty buttons */
+.filter-options {
+    display: flex;
+    justify-content: center; /* 🔥 кнопки по центру */
+    gap: 10px;
+}
+.filter-option {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 27px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #837374;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+.filter-option.active {
+    background: #ffcdde;
+}
+.tasks-list.empty {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.no-tasks {
+    width: 100%;
+    padding: 20px;
+    text-align: center;
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #8F9A9D;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+}
+.tasks-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 10px;
+    width: 100%;
+    padding: 20px;          /* было 10px — теперь как у панели */
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 20px;
+    box-sizing: border-box;
+}
+.tasks-item {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    gap: 15px;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid #FFFFFF;
+    border-radius: 30px;
+    min-width: 260px;
+    overflow: hidden;           /* на всякий случай, чтобы контент не выпирал за радиус */
+}
+.tasks-img {
+    width: 87px;
+    height: 87px;
+    border-radius: 76.5px;
+}
+.tasks-info-btn {
+    display: flex;
+    align-items: center;
+    gap: 16px;                  /* чуть меньше, чтобы не распирало */
+    flex: 1;                    /* тянется на доступную ширину */
+    min-width: 0;               /* позволяет внутренним элементам сжиматься */
+    padding: 0;                 /* убираем лишний паддинг, чтобы не смещал кнопку */
+    box-sizing: border-box;
+}
+.tasks-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;               /* критично — даёт текстам возможность сжиматься */
+}
+.tasks-title {
+    width: 120px;
+    display: flex;
+    align-items: flex-start;
+    font-family: 'Nunito', serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 20px;
+    color: #6F7376;
+    margin: 0;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+}
+.tasks-description-diff {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px;
+    gap: 10px;
+    width: 120px;
+    flex: none;
+    order: 1;
+    align-self: stretch;
+    flex-grow: 0;
+}
+.tasks-description {
+    margin: 0;
+    width: 52px;
+    font-family: 'Nunito', serif;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
+    color: #8F9A9D;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+}
+.tasks-title,
+.tasks-description {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;        /* чтобы длинные строки не толкали кнопку */
+}
+.tasks-description[title] {
+    cursor: help;
+}
+.tasks-diff {
+    margin: 0;
+    font-family: 'Nunito', serif;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 14px;
+    color: #8F9A9D;
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+}
+.tasks-btn {
+    margin-left: auto;          /* кнопка уходит вправо, но в пределах карточки */
+    background: none;
+    border: none;
+    padding: 0 4px;             /* небольшой внутренний зазор, чтобы не казалась прилипшей */
+    font-family: 'Nunito', serif;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 22px;
+    color: #FF7F82;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+.tasks-btn:hover {
+    color: #ffa2a4;
+}

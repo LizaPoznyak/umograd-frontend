@@ -1,0 +1,133 @@
+.achievements-center {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    margin: 40px auto;
+}
+
+.achievements-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 368px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 20px;
+    padding: 15px;
+}
+
+/* Tabs */
+.achievements-tabs {
+    display: flex;
+    gap: 20px;
+}
+.tab {
+    font-weight: 600;
+    font-size: 14px;
+    color: #98A0A4;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    padding-bottom: 3px;
+}
+.tab.active {
+    color: #837374;
+    border-color: #837374;
+}
+
+/* Sort + filters */
+.achievements-sort-block {
+    background: rgba(255,255,255,0.6);
+    border-radius: 20px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.sort-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.sort-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: #837374;
+}
+.sort-reset {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #837374;
+    cursor: pointer;
+}
+.sort-reset .close {
+    font-size: 18px;
+}
+
+/* Filters */
+.achievements-filters {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+.filter {
+    padding: 10px;
+    border-radius: 27px;
+    background: rgba(255,255,255,0.8);
+    font-size: 14px;
+    font-weight: 600;
+    color: #837374;
+    cursor: pointer;
+}
+.filter.active {
+    background: #FFCDDE;
+}
+
+/* Grid */
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    background: rgba(255,255,255,0.8);
+    border-radius: 20px;
+    padding: 20px;
+}
+
+/* Карточка фиксированного размера */
+.achievement-card {
+    width: 100px;       /* одинаковая ширина */
+    height: 150px;      /* одинаковая высота */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+
+    background: rgba(255,255,255,0.6);
+    border-radius: 12px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+/* Картинка фиксированного размера */
+.achievement-img {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;   /* картинка вписывается без обрезки */
+}
+
+/* Название */
+.achievement-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #545d61;
+    text-align: center;
+    margin: 4px 0;
+    line-height: 1.2;
+}
+
+/* Звёзды */
+.achievement-stars {
+    font-size: 14px;
+    color: #FFD700;
+}

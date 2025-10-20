@@ -1,125 +1,125 @@
 .profile-container {
     display: flex;
-    justify-content: center;
-    padding: 2rem;
-    font-family: "Open Sans", sans-serif;
-}
-
-.profile-card {
-    background: #FDFCFA;
-    border: 2px solid #3A8EFF;
-    border-radius: 12px;
-    padding: 2rem;
-    max-width: 400px;
-    width: 100%;
-    text-align: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 47px;
+    padding: 30px;
+    width: 744px;
+    min-height: 350px;
+    margin: 40px auto;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 30px;
 }
 
 .profile-avatar {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto 1rem;
-    border-radius: 50%;
-    background-color: #59C9D2;
+    width: 228px;
+    height: 290px;
+    border-radius: 92px;
+    background: rgba(255, 255, 255, 0.6);
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 64px;
+    font-weight: 700;
+    color: #6F7376;
+}
+
+.profile-avatar-img {
+    width: 228px;
+    height: 290px;
+}
+
+.profile-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    width: 409px;
+}
+
+.profile-title {
     font-size: 32px;
     font-weight: 700;
-    color: #FDFCFA;
+    color: #6F7376;
+    font-family: 'Nunito', sans-serif;
+    text-align: center;
+    margin: 0;
 }
 
-.profile-username {
-    font-size: 22px;
+.profile-info-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    background: rgba(255,255,255,0.4);
+    border-radius: 11px;
+}
+
+.profile-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.profile-label {
+    font-size: 20px;
     font-weight: 700;
-    color: #333;
-    margin-bottom: 0.5rem;
+    color: #6F7376;
+    width: 116px;
 }
 
-.profile-email {
+.profile-value {
     font-size: 14px;
-    color: #666;
-    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #6F7376;
 }
 
-.profile-roles {
-    font-size: 14px;
-    color: #333;
-    margin-bottom: 1.5rem;
+.profile-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    padding-left: 50px;
+    padding-right: 50px;
 }
 
 .profile-edit-btn {
-    background-color: #3A8EFF;
-    color: #FDFCFA;
+    background: linear-gradient(90deg, #689ECA 0%, #8FDADB 100%);
     border: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 6px;
+    border-radius: 30px;
+    padding: 10px 30px;
+    color: #fff;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
     cursor: pointer;
-    font-weight: 500;
-    transition: background-color 0.2s;
 }
 
-.profile-edit-btn:hover {
-    background-color: #2f6ed1;
+.profile-stats-btn {
+    background: linear-gradient(90deg, #7FCA68 0%, #A3DB8F 100%);
+    border: none;
+    border-radius: 30px;
+    padding: 10px 30px;
+    color: #fff;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
 }
 
 .profile-form {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    margin-top: 1rem;
-    text-align: left;
-}
-
-.profile-form label {
-    font-size: 14px;
-    color: #333;
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-}
-
-.profile-form input {
-    padding: 0.5rem;
-    border: 1px solid #FDFCFA;
-    border-radius: 6px;
-    font-size: 14px;
-}
-
-.profile-form-actions {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.profile-save-btn {
-    background-color: #3A8EFF;
-    color: #FDFCFA;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background-color 0.2s;
-}
-
-.profile-save-btn:hover {
-    background-color: #2f6ed1;
+    gap: 20px;
 }
 
 .profile-cancel-btn {
-    background-color: #D7372E;
-    color: white;
+    background: none;
     border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
+    color: #FFFFFF;
+    font-weight: 600;
     cursor: pointer;
-    font-weight: 500;
-    transition: background-color 0.2s;
+    font-size: 14px;
+    text-decoration: none;
+    font-family: 'Nunito', sans-serif;
 }
-
 .profile-cancel-btn:hover {
-    background-color: #b52b24;
+    text-decoration: underline;
 }
