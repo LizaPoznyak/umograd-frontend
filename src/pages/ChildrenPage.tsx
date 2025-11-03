@@ -3,6 +3,9 @@ import { getChildren, addChild, deleteChild } from "../api/children";
 import type { ChildResponse } from "../types/user";
 import Alert from "../components/Alert";
 import Loader from "../components/Loader";
+import Navbar from "../components/Navbar.tsx";
+import Footer from "../components/Footer.tsx";
+import "../components/Layout.css";
 
 export default function ChildrenPage() {
     const [children, setChildren] = useState<ChildResponse[]>([]);
@@ -66,62 +69,69 @@ export default function ChildrenPage() {
     }
 
     return (
-        <div>
-            <h2>Мои дети</h2>
+        <div className="app-layout">
+            <Navbar/>
+            <main className="app-main">
+                <div>
+                    <h2>Мои дети</h2>
 
-            {loading && <Loader />}
-            <Alert type="error" message={error} />
-            <Alert type="success" message={success} />
+                    {loading && <Loader/>}
+                    <Alert type="error" message={error}/>
+                    <Alert type="success" message={success}/>
 
-            <form onSubmit={handleAdd} style={{ marginBottom: "1rem" }}>
-                <input
-                    type="text"
-                    placeholder="Логин ребёнка"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                />
-                <input
-                    type="email"
-                    placeholder="Email ребёнка"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                />
-                <input
-                    type="password"
-                    placeholder="Пароль"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
-                <button type="submit">Добавить ребёнка</button>
-            </form>
+                    <form onSubmit={handleAdd} style={{marginBottom: "1rem"}}>
+                        <input
+                            type="text"
+                            placeholder="Логин ребёнка"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            required
+                        />
+                        <input
+                            type="email"
+                            placeholder="Email ребёнка"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                        />
+                        <input
+                            type="password"
+                            placeholder="Пароль"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                        <button type="submit">Добавить ребёнка</button>
+                    </form>
 
-            {!loading && !error && (
-                <table border={1} cellPadding={5} style={{ borderCollapse: "collapse" }}>
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Логин</th>
-                        <th>Email</th>
-                        <th>Действия</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {children.map((c) => (
-                        <tr key={c.id}>
-                            <td>{c.id}</td>
-                            <td>{c.username}</td>
-                            <td>{c.email}</td>
-                            <td>
-                                <button onClick={() => handleDelete(c.id)}>Удалить</button>
-                            </td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
-            )}
+                    {!loading && !error && (
+                        <table border={1} cellPadding={5} style={{borderCollapse: "collapse"}}>
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Логин</th>
+                                <th>Email</th>
+                                <th>Действия</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {children.map((c) => (
+                                <tr key={c.id}>
+                                    <td>{c.id}</td>
+                                    <td>{c.username}</td>
+                                    <td>{c.email}</td>
+                                    <td>
+                                        <button onClick={() => handleDelete(c.id)}>Удалить</button>
+                                    </td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
+                    )}
+                </div>
+            </main>
+            <Footer />
         </div>
     );
 }
+

@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "./axiosConfig";
 import type { UserProfile } from "../types/user";
 
 interface UpdateUserProfileResponse {
@@ -8,19 +8,11 @@ interface UpdateUserProfileResponse {
 }
 
 export async function updateProfile(data: any): Promise<UpdateUserProfileResponse> {
-    const res = await axios.put<UpdateUserProfileResponse>("http://localhost:8080/api/v1/users/me", data, {
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-    });
+    const res = await api.put<UpdateUserProfileResponse>("/users/me", data);
     return res.data;
 }
 
 export async function fetchProfile(): Promise<UserProfile> {
-    const res = await axios.get<UserProfile>("http://localhost:8080/api/v1/users/me", {
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-    });
+    const res = await api.get<UserProfile>("/users/me");
     return res.data;
 }
