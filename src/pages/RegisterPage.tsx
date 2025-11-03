@@ -10,12 +10,14 @@ export default function RegisterPage() {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
     const [avatar, setAvatar] = useState<string | null>(null);
     const [isParent, setIsParent] = useState(true);
-    const [age, setAge] = useState("");
+    const [birthDate, setBirthDate] = useState("");
+    const [parentUsername, setParentUsername] = useState<string>("");
 
     function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
@@ -33,7 +35,30 @@ export default function RegisterPage() {
             setError(null);
             setSuccess(null);
 
-            const tokens = await register({ username, email, password });
+            if (password !== confirmPassword) {
+                setError("Пароли не совпадают");
+                return;
+            }
+            if (!username.trim()) {
+                setError("Введите логин");
+                return;
+            }
+            if (!isParent && !birthDate) {
+                setError("Для регистрации ребёнка укажите дату рождения");
+                return;
+            }
+
+            const payload = {
+                username,
+                email: email || undefined,
+                password,
+                isParent,
+                birthDate: !isParent ? birthDate : undefined,
+                parentUsername: !isParent && parentUsername ? parentUsername : undefined,
+                avatarUrl: avatar || undefined,
+            };
+
+            const tokens = await register(payload);
             localStorage.setItem("accessToken", tokens.accessToken);
             localStorage.setItem("refreshToken", tokens.refreshToken);
 
@@ -41,11 +66,15 @@ export default function RegisterPage() {
             setUsername("");
             setEmail("");
             setPassword("");
+            setConfirmPassword("");
+            setBirthDate("");
+            setAvatar(null);
+            setParentUsername("");
 
             setTimeout(() => setSuccess(null), 3000);
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
-            setError("Ошибка регистрации");
+            setError(err?.message || "Ошибка регистрации");
             setTimeout(() => setError(null), 3000);
         } finally {
             setLoading(false);
@@ -62,7 +91,6 @@ export default function RegisterPage() {
                             type="file"
                             accept="image/*"
                             style={{display: "none"}}
-                            //value={avatar}
                             onChange={handleAvatarUpload}
                         />
                         {avatar ? (
@@ -99,31 +127,42 @@ export default function RegisterPage() {
                             type="password"
                             placeholder="Подтверждение пароля"
                             className="register-input"
-                            /*value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required*/
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            required
                         />
+
+                        {/* Если регистрируется ребёнок — показать дату рождения и при желании parentId */}
                         {!isParent && (
-                            <input
-                                type="number"
-                                placeholder="Возраст"
-                                className="register-input"
-                                value={age}
-                                onChange={(e) => setAge(e.target.value)}
-                                required
-                            />
+                            <>
+                                <input
+                                    type="date"
+                                    placeholder="Дата рождения"
+                                    className="register-input"
+                                    value={birthDate}
+                                    onChange={(e) => setBirthDate(e.target.value)}
+                                    required
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Username родителя (необязательно)"
+                                    className="register-input"
+                                    value={parentUsername}
+                                    onChange={(e) => setParentUsername(e.target.value)}
+                                />
+                            </>
                         )}
+
                         <label className="register-checkbox">
                             <input
                                 type="checkbox"
                                 checked={isParent}
                                 onChange={(e) => setIsParent(e.target.checked)}
-                                /*value={parent_role}
-                                onChange={(e) => setRole(e.target.value)}*/
                             />
                             <span className="checkmark"></span>
                             Я родитель
                         </label>
+
                         <div className="register-actions">
                             <button type="submit" className="register-button" disabled={loading}>
                                 {loading ? "Регистрация..." : "Зарегистрироваться"}

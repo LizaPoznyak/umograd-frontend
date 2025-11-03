@@ -1,19 +1,11 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
-import avatar from "../assets/avatar.png";
 import bellIcon from "../assets/notif.png";
 import menuDots from "../assets/menu.png";
-import closeIcon from "../assets/close.png"; // твой крестик без фона
+import closeIcon from "../assets/close.png";
 import "./Navbar.css";
-import {useEffect, useRef, useState} from "react";
-
-function parseJwt(token: string) {
-    const base64Url = token.split(".")[1];
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
-    const jsonPayload = new TextDecoder().decode(bytes);
-    return JSON.parse(jsonPayload);
-}
+import { useEffect, useRef, useState } from "react";
+import { useUser } from "../context/UserContext";
 
 export default function Navbar() {
     const navigate = useNavigate();
@@ -21,6 +13,8 @@ export default function Navbar() {
     const [showMenu, setShowMenu] = useState(false);
     const notifRef = useRef<HTMLDivElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
+
+    const { profile, setProfile } = useUser();
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -41,38 +35,33 @@ export default function Navbar() {
     function handleLogout() {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
+        setProfile(null);
         navigate("/");
     }
 
-    const token = localStorage.getItem("accessToken");
-    let username = "";
-    let roles: string[] = [];
-    if (token) {
-        try {
-            const payload = parseJwt(token);
-            username = payload.username;
-            roles = payload.roles || [];
-        } catch {
-            username = "";
-        }
+    if (!profile) return null;
+
+    // безопасные проверки
+    let homePath = "/";
+    if (Array.isArray(profile.roles) && profile.roles.includes("ROLE_MODERATOR")) {
+        homePath = "/users";
+    } else if (Array.isArray(profile.roles) && profile.roles.includes("ROLE_PARENT")) {
+        homePath = "/children";
+    } else if (Array.isArray(profile.roles) && profile.roles.includes("ROLE_CHILD")) {
+        homePath = "/child";
     }
 
-    let homePath = "/";
-    if (roles.includes("ROLE_MODERATOR")) homePath = "/users";
-    else if (roles.includes("ROLE_PARENT")) homePath = "/children";
-    else if (roles.includes("ROLE_CHILD")) homePath = "/child";
+    const usernameFirstLetter = profile.username?.[0]?.toUpperCase() ?? "?";
 
     return (
         <header className="navbar">
             <div className="navigation">
-                {/* Логотип слева */}
                 <div className="navbar-left">
                     <NavLink to={homePath} className="logo-circle">
                         <img src={logo} alt="Umograd" className="logo" />
                     </NavLink>
                 </div>
 
-                {/* Центр — навигация */}
                 <nav className="navbar-center">
                     <NavLink to={homePath} className="nav-item">Главная</NavLink>
                     <NavLink to="/tasks" className="nav-item">Задания</NavLink>
@@ -82,7 +71,6 @@ export default function Navbar() {
 
             <span className="brand">Умоград</span>
 
-            {/* Правая часть */}
             <div className="navbar-right">
                 {/* Уведомления */}
                 <div
@@ -90,62 +78,45 @@ export default function Navbar() {
                     className={`notif-block ${showNotif ? "active" : ""}`}
                     onClick={() => {
                         setShowNotif(!showNotif);
-                        setShowMenu(false); // закрываем меню, если открыто
+                        setShowMenu(false);
                     }}
                 >
-                    <img src={bellIcon} alt="Уведомления" className="notif-icon"/>
+                    <img src={bellIcon} alt="Уведомления" className="notif-icon" />
                     <span className="notif-text">Уведомления</span>
                     {showNotif && (
                         <div className="dropdown dropdown-notif">
-                            <div className="notif-item">
-                                <span>Уведомление 1</span>
-                                <button className="notif-close">
-                                    <img src={closeIcon} alt="Закрыть" />
-                                </button>
-                            </div>
-                            <div className="notif-item">
-                                <span>Уведомление 2</span>
-                                <button className="notif-close">
-                                    <img src={closeIcon} alt="Закрыть" />
-                                </button>
-                            </div>
-                            <div className="notif-item">
-                                <span>Уведомление 3</span>
-                                <button className="notif-close">
-                                    <img src={closeIcon} alt="Закрыть" />
-                                </button>
-                            </div>
-                            <div className="notif-item">
-                                <span>Уведомление 4</span>
-                                <button className="notif-close">
-                                    <img src={closeIcon} alt="Закрыть" />
-                                </button>
-                            </div>
+                            {["Уведомление 1", "Уведомление 2", "Уведомление 3"].map((text, i) => (
+                                <div key={i} className="notif-item">
+                                    <span>{text}</span>
+                                    <button className="notif-close">
+                                        <img src={closeIcon} alt="Закрыть" />
+                                    </button>
+                                </div>
+                            ))}
                         </div>
                     )}
                 </div>
 
                 {/* Профиль */}
-                {username && (
-                    <div
-                        className="profile-block"
-                        onClick={() => navigate("/profile")}
-                    >
-                        <img src={avatar} alt="avatar" className="avatar"/>
-                        <span className="username">{username}</span>
-                    </div>
-                )}
+                <div className="profile-block" onClick={() => navigate("/profile")}>
+                    {profile.avatarUrl ? (
+                        <img src={profile.avatarUrl} alt="avatar" className="avatar" />
+                    ) : (
+                        <div className="navbar-avatar-fallback">{usernameFirstLetter}</div>
+                    )}
+                    <span className="username">{profile.username}</span>
+                </div>
 
                 {/* Меню */}
                 <div ref={menuRef} className="menu-wrapper">
                     <button
                         onClick={() => {
                             setShowMenu(!showMenu);
-                            setShowNotif(false); // закрываем уведомления, если открыты
+                            setShowNotif(false);
                         }}
                         className={`logout-circle ${showMenu ? "active" : ""}`}
                     >
-                        <img src={menuDots} alt="Меню" className="menu-icon"/>
+                        <img src={menuDots} alt="Меню" className="menu-icon" />
                     </button>
                     {showMenu && (
                         <div className="dropdown dropdown-menu">

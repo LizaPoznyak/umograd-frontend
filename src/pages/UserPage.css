@@ -22,11 +22,66 @@
     font-size: 64px;
     font-weight: 700;
     color: #6F7376;
+    position: relative;
+    overflow: hidden;
 }
 
 .profile-avatar-img {
     width: 228px;
     height: 290px;
+    border-radius: 92px;
+}
+
+.profile-avatar.editable {
+    cursor: pointer;
+}
+
+.profile-avatar .profile-avatar-img,
+.avatar-fallback {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-fallback {
+    width: 228px;
+    height: 290px;
+    border-radius: 92px;
+    background-color: #B8DCFF;   /* фон */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 96px;             /* крупная буква */
+    font-weight: 700;
+    color: #ffffff;              /* белая буква */
+    text-transform: uppercase;   /* на всякий случай */
+}
+
+.avatar-edit-overlay {
+    position: absolute;
+    bottom: 0;
+    width: 75%;
+    background: rgba(0,0,0,0.5);
+    color: white;
+    text-align: center;
+    font-size: 14px;
+    padding: 4px;
+}
+
+.avatar-delete-icon {
+    position: absolute;
+    top: 20px;       /* отступ сверху */
+    right: 40px;     /* отступ справа */
+    width: 10px;    /* маленький размер */
+    height: 10px;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+    z-index: 2;     /* поверх картинки */
+}
+
+.avatar-delete-icon:hover {
+    opacity: 1;
 }
 
 .profile-fields {

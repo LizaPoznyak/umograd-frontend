@@ -1,16 +1,20 @@
 import { useState } from "react";
 import { login } from "../api/auth";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer.tsx";
 import "../components/Layout.css";
 import "../styles/LoginPage.css";
 import Loader from "../components/Loader.tsx";
+import { useUser } from "../context/UserContext";
+import { fetchProfile } from "../api/user"; // ⚡️ подтягиваем профиль с бэка
 
 export default function LoginPage() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+
+    const { setProfile } = useUser();
 
     async function handleLogin(e: React.FormEvent) {
         e.preventDefault();
@@ -22,39 +26,33 @@ export default function LoginPage() {
             localStorage.setItem("accessToken", accessToken);
             localStorage.setItem("refreshToken", refreshToken);
 
-            // если бэк вернул userId → сохраняем
             if (userId) {
                 localStorage.setItem("childId", userId.toString());
             } else {
-                // иначе достаём из токена
                 const payload = JSON.parse(atob(accessToken.split(".")[1]));
                 if (payload.sub) {
                     localStorage.setItem("childId", payload.sub.toString());
                 }
             }
 
-            // роли и имя пользователя из токена
-            const payload = JSON.parse(atob(accessToken.split(".")[1]));
-            const roles: string[] = payload.roles || [];
-            const usernameFromToken: string = payload.username;
-
-            localStorage.setItem("username", usernameFromToken);
+            // ⚡️ сразу подтягиваем профиль с бэка (с аватаром)
+            const apiProfile = await fetchProfile();
+            setProfile(apiProfile);
 
             // редирект по роли
-            if (roles.includes("ROLE_MODERATOR")) {
+            if (apiProfile.roles.includes("ROLE_MODERATOR")) {
                 navigate("/users");
-            } else if (roles.includes("ROLE_PARENT")) {
+            } else if (apiProfile.roles.includes("ROLE_PARENT")) {
                 navigate("/children");
-            } else if (roles.includes("ROLE_CHILD")) {
+            } else if (apiProfile.roles.includes("ROLE_CHILD")) {
                 navigate("/child");
             } else {
-                alert("Неизвестная роль, остаёмся на странице входа");
+                navigate("/");
             }
         } catch (err) {
             console.error(err);
             alert("Ошибка входа");
-        }
-        finally {
+        } finally {
             setLoading(false);
         }
     }
@@ -84,7 +82,7 @@ export default function LoginPage() {
                             />
                         </div>
                         <div className="login-forgo-container">
-                            <a href="#" className="login-forgot">Забыли пароль?</a>
+                            {/*<a href="#" className="login-forgot">Забыли пароль?</a>*/}
                         </div>
                         <div className="login-actions">
                             <button type="submit" className="login-button" disabled={loading}>
@@ -93,10 +91,10 @@ export default function LoginPage() {
                             <a href="/register" className="login-register">Регистрация</a>
                         </div>
                     </form>
-                    {loading && <Loader/>}
+                    {loading && <Loader />}
                 </div>
             </main>
-            <Footer/>
+            <Footer />
         </div>
     );
 }

@@ -1,29 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { updateProfile } from "../api/user";
+import type { UserProfile } from "../types/user";
 import "./UserPage.css";
 import Navbar from "../components/Navbar.tsx";
 import "../components/Layout.css";
 import Footer from "../components/Footer.tsx";
-import MockAvatar from "../assets/mock-avatar.png";
-
-function parseJwt(token: string) {
-    const base64Url = token.split(".")[1];
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
-    const jsonPayload = new TextDecoder().decode(bytes);
-    return JSON.parse(jsonPayload);
-}
-
-/*function calcAge(birthDate: string) {
-    if (!birthDate) return "";
-    const today = new Date();
-    const dob = new Date(birthDate);
-    let age = today.getFullYear() - dob.getFullYear();
-    const m = today.getMonth() - dob.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
-        age--;
-    }
-    return age;
-}*/
+import closeIcon from "../assets/close.png";
+import { useUser } from "../context/UserContext";
 
 const roleMap: Record<string, string> = {
     ROLE_CHILD: "Ребёнок",
@@ -31,47 +14,108 @@ const roleMap: Record<string, string> = {
     ROLE_MODERATOR: "Модератор",
 };
 
-export default function UserPage() {
-    const token = localStorage.getItem("accessToken");
-    let username = "";
-    let email = "";
-    let roles: string[] = [];
-    let birthDate = "";
+// функция для корректного подсчёта возраста
+function calcAge(dateStr: string): number {
+    const birth = new Date(dateStr);
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+        age--;
+    }
+    return age;
+}
 
-    if (token) {
-        try {
-            const payload = parseJwt(token);
-            username = payload.username || "";
-            email = payload.email || "";
-            roles = payload.roles || [];
-            birthDate = payload.birthDate || "";
-        } catch {
-            username = "";
+export default function UserPage() {
+    const { profile, setProfile } = useUser();
+    const [isEditing, setIsEditing] = useState(false);
+    const [form, setForm] = useState<Partial<UserProfile>>({});
+    const [avatar, setAvatar] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (profile) {
+            setForm(profile);
+            setAvatar(profile.avatarUrl || null);
+        }
+    }, [profile]);
+
+    function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = () => setAvatar(reader.result as string);
+            reader.readAsDataURL(file);
         }
     }
 
-    const [isEditing, setIsEditing] = useState(false);
-    const [newUsername, setNewUsername] = useState(username);
-    const [newEmail, setNewEmail] = useState(email);
-    const [newBirthDate, setNewBirthDate] = useState(birthDate);
-
-    function handleSave(e: React.FormEvent) {
+    async function handleSave(e: React.FormEvent) {
         e.preventDefault();
-        console.log("Сохраняем:", { newUsername, newEmail, newBirthDate });
-        setIsEditing(false);
+        try {
+            const { accessToken, refreshToken, profile: updatedProfile } = await updateProfile({
+                ...form,
+                avatarUrl: avatar || undefined,
+            });
+
+            if (accessToken) localStorage.setItem("accessToken", accessToken);
+            if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
+
+            // ⚡️ теперь берём профиль прямо из ответа
+            setProfile(updatedProfile);
+
+            setIsEditing(false);
+        } catch (err) {
+            console.error("Ошибка обновления профиля", err);
+        }
     }
 
-    const isChild = roles.includes("ROLE_CHILD");
+    if (!profile) return <div>Загрузка...</div>;
+
+    const isChild = Array.isArray(profile.roles) && profile.roles.includes("ROLE_CHILD");
+    const usernameFirstLetter = profile.username?.[0]?.toUpperCase() ?? "?";
 
     return (
         <div className="app-layout">
             <Navbar />
             <main className="app-main">
                 <div className="profile-container">
-                    <div className="profile-avatar">
-                        <img src={MockAvatar} alt="Моковый аватар" className="profile-avatar-img"/>
+                    {/* Аватар */}
+                    <div className={`profile-avatar ${isEditing ? "editable" : ""}`}>
+                        {isEditing ? (
+                            <label className="register-avatar">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    style={{ display: "none" }}
+                                    onChange={handleAvatarUpload}
+                                />
+                                {avatar ? (
+                                    <img src={avatar} alt="Аватар" className="profile-avatar-img" />
+                                ) : (
+                                    <div className="avatar-fallback">{usernameFirstLetter}</div>
+                                )}
+                                <span className="avatar-edit-overlay">Изменить</span>
+                            </label>
+                        ) : (
+                            <>
+                                {avatar ? (
+                                    <img src={avatar} alt="Аватар" className="profile-avatar-img" />
+                                ) : (
+                                    <div className="avatar-fallback">{usernameFirstLetter}</div>
+                                )}
+                            </>
+                        )}
+
+                        {isEditing && avatar && (
+                            <img
+                                src={closeIcon}
+                                alt="Удалить"
+                                className="avatar-delete-icon"
+                                onClick={() => setAvatar(null)}
+                            />
+                        )}
                     </div>
 
+                    {/* Поля профиля */}
                     <div className="profile-fields">
                         <h2 className="profile-title">Профиль</h2>
 
@@ -80,27 +124,29 @@ export default function UserPage() {
                                 <div className="profile-info-card">
                                     <div className="profile-row">
                                         <span className="profile-label">Логин:</span>
-                                        <span className="profile-value">{username}</span>
+                                        <span className="profile-value">{profile.username}</span>
                                     </div>
 
-                                    {email && (
+                                    {profile.email && (
                                         <div className="profile-row">
                                             <span className="profile-label">Email:</span>
-                                            <span className="profile-value">{email}</span>
+                                            <span className="profile-value">{profile.email}</span>
                                         </div>
                                     )}
 
                                     <div className="profile-row">
                                         <span className="profile-label">Роль:</span>
                                         <span className="profile-value">
-                      {roles.length > 0 ? roles.map(r => roleMap[r] || r).join(", ") : "—"}
+                      {Array.isArray(profile.roles)
+                          ? profile.roles.map((r) => roleMap[r] || r).join(", ")
+                          : "—"}
                     </span>
                                     </div>
 
-                                    {isChild && (
+                                    {isChild && profile.birthDate && (
                                         <div className="profile-row">
                                             <span className="profile-label">Возраст:</span>
-                                            <span className="profile-value">10{/*{calcAge(birthDate)}*/} лет</span>
+                                            <span className="profile-value">{calcAge(profile.birthDate)} лет</span>
                                         </div>
                                     )}
                                 </div>
@@ -108,7 +154,11 @@ export default function UserPage() {
                                 <div className="profile-actions">
                                     <button
                                         className="profile-edit-btn"
-                                        onClick={() => setIsEditing(true)}
+                                        onClick={() => {
+                                            setForm(profile);
+                                            setAvatar(profile.avatarUrl || null);
+                                            setIsEditing(true);
+                                        }}
                                     >
                                         Изменить
                                     </button>
@@ -121,8 +171,8 @@ export default function UserPage() {
                                     type="text"
                                     className="register-input"
                                     placeholder="Логин"
-                                    value={newUsername}
-                                    onChange={(e) => setNewUsername(e.target.value)}
+                                    value={form.username || ""}
+                                    onChange={(e) => setForm({ ...form, username: e.target.value })}
                                     required
                                 />
 
@@ -130,16 +180,16 @@ export default function UserPage() {
                                     type="email"
                                     className="register-input"
                                     placeholder="Email"
-                                    value={newEmail}
-                                    onChange={(e) => setNewEmail(e.target.value)}
+                                    value={form.email || ""}
+                                    onChange={(e) => setForm({ ...form, email: e.target.value })}
                                 />
 
                                 {isChild && (
                                     <input
                                         type="date"
                                         className="register-input"
-                                        value={newBirthDate}
-                                        onChange={(e) => setNewBirthDate(e.target.value)}
+                                        value={form.birthDate || ""}
+                                        onChange={(e) => setForm({ ...form, birthDate: e.target.value })}
                                         required
                                     />
                                 )}

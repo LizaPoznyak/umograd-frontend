@@ -3,12 +3,16 @@ export interface AuthRequest {
     password: string;
 }
 
-export interface RegisterRequest {
+export type RegisterRequest = {
     username: string;
-    email: string;
+    email?: string;
     password: string;
-    role?: "ROLE_PARENT" | "ROLE_MODERATOR" | "ROLE_CHILD";
-}
+    isParent: boolean;
+    birthDate?: string;
+    parentUsername?: string;
+    avatarUrl?: string;
+    role?: 'ROLE_PARENT' | 'ROLE_CHILD';
+};
 
 export interface AuthResponse {
     accessToken: string;
