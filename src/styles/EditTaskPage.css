@@ -1,0 +1,110 @@
+.edit-nav-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.delete-task-btn {
+    background: #fff0f0;
+    color: #ff4d4d;
+    border: 1px solid #ff4d4d;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.tasks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.task-item-card {
+    background: white;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: 0.3s;
+}
+
+.task-item-card:hover {
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    border-color: #6e8efb;
+}
+
+.task-meta {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.q-count-badge, .age-badge {
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+}
+
+.q-count-badge { background: #eef2ff; color: #6e8efb; }
+.age-badge { background: #f0fdf4; color: #16a34a; }
+
+.task-item-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.edit-btn {
+    flex: 1;
+    background: #6e8efb;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.delete-small-btn {
+    background: #f5f5f5;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.card-type-badge {
+    font-size: 12px;
+    background: #eee;
+    padding: 2px 8px;
+    border-radius: 4px;
+    color: #666;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    background: #f0f4ff;
+    color: #6e8efb;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.back-btn:hover {
+    background: #e0e7ff;
+    transform: translateX(-3px);
+}
+
+.back-btn:active {
+    transform: translateX(-1px);
+}

@@ -5,11 +5,16 @@ import "../components/Layout.css";
 import Footer from "../components/Footer.tsx";
 import "../styles/TaskExecutionPage.css";
 
-type TaskContentDto = {
-    type: string;       // "choice" | "text"
+type questionDtosDto = {
+    type: string; // "quiz", "text", "image", "multiple_choice"
     question: string;
-    options?: string[]; // для choice
+    options?: string[];
     answer: string;
+    hint?: string;
+};
+
+type TaskContentDto = {
+    questionDtos: questionDtosDto[]; // Теперь это массив
 };
 
 type TaskDto = {
@@ -24,10 +29,12 @@ export default function TaskExecutionPage() {
     const navigate = useNavigate();
 
     const [task, setTask] = useState<TaskDto | null>(null);
-    const [selected, setSelected] = useState<string>(""); // и для текста, и для выбора
+    const [currentIndex, setCurrentIndex] = useState<number>(0);
+    const [selected, setSelected] = useState<string>("");
     const [attempts, setAttempts] = useState<number>(0);
     const [message, setMessage] = useState<string>("");
     const [submitting, setSubmitting] = useState<boolean>(false);
+    const [showHint, setShowHint] = useState<boolean>(false);
 
     useEffect(() => {
         const loadTask = async () => {
@@ -41,11 +48,13 @@ export default function TaskExecutionPage() {
                     setMessage("Не удалось загрузить задание");
                 }
             } catch {
-                setMessage("Ошибка сети при загрузке задания");
+                setMessage("Ошибка сети");
             }
         };
         if (taskId) loadTask();
     }, [taskId]);
+
+    const currentQuestion = task?.content?.questionDtos?.[currentIndex];
 
     const finishWithScore = async (score: number) => {
         setSubmitting(true);
@@ -57,56 +66,59 @@ export default function TaskExecutionPage() {
             });
             if (res.ok) {
                 const result = await res.json();
-                alert(
-                    score > 0
-                        ? `Молодец! Задание выполнено. Баллы: ${result.score}. Попыток: ${attempts}.`
-                        : `Задание завершено с нулём баллов. Попыток: ${attempts}.`
-                );
+                alert(`Задание выполнено! Баллы: ${result.score}. Попыток: ${attempts}.`);
                 navigate("/tasks");
-            } else {
-                alert("Ошибка при завершении задания");
             }
         } catch {
-            alert("Сеть недоступна. Попробуй позже.");
+            alert("Ошибка связи с сервером");
         } finally {
             setSubmitting(false);
         }
     };
 
-    const handleFinish = async () => {
-        if (!task) return;
+    const handleNext = async () => {
+        if (!currentQuestion) return;
         if (!selected.trim()) {
-            setMessage("Пожалуйста, введи или выбери ответ");
+            setMessage("Пожалуйста, выбери ответ");
             return;
         }
 
-        const newAttempts = attempts + 1;
-        setAttempts(newAttempts);
+        const isCorrect = selected.trim() === currentQuestion.answer;
 
-        if (selected.trim() === task.content.answer) {
-            await finishWithScore(1);
+        if (!isCorrect) {
+            setAttempts(prev => prev + 1);
+            setMessage("Ответ неверный. Попробуй еще раз!");
+            return;
+        }
+
+        setMessage("");
+        setSelected("");
+        setShowHint(false);
+
+        if (currentIndex < (task?.content.questionDtos.length || 0) - 1) {
+            setCurrentIndex(prev => prev + 1);
         } else {
-            setMessage(`Ответ неверный. Попробуй ещё раз!`);
+            await finishWithScore(1);
         }
     };
 
-    const handleGiveUp = async () => {
-        const confirmZero = window.confirm(
-            `Ты сделал(а) ${attempts} попыток. Завершить задание с 0 баллов?`
-        );
-        if (confirmZero) {
-            await finishWithScore(0);
-        }
-    };
+    if (!task || !task.content || !task.content.questionDtos) {
+        return <p>Загрузка...</p>;
+    }
 
-    if (!task) return <p>Загрузка...</p>;
+    if (task.content.questionDtos.length === 0 || !currentQuestion) {
+        return <p>В задании нет вопросов</p>;
+    }
 
     return (
         <div className="app-layout">
             <Navbar/>
             <main className="app-main task-exec">
                 <div className="task-header">
-                    <h2 className="task-title">{task.title}</h2>
+                    <div>
+                        <h2 className="task-title">{task.title}</h2>
+                        <p>Вопрос {currentIndex + 1} из {task.content.questionDtos.length}</p>
+                    </div>
                     <div className="attempts-heart">
                         <span className="heart">❤️</span>
                         <span className="attempts-count">{attempts}</span>
@@ -114,28 +126,27 @@ export default function TaskExecutionPage() {
                 </div>
 
                 <div className="task-card">
-                    <p className="task-question">{task.content.question}</p>
+                    <p className="task-question">{currentQuestion.question}</p>
 
-                    {(task.content.type.toLowerCase() === "quiz" ||
-                            task.content.type.toLowerCase() === "multiple_choice") &&
-                        task.content.options && (
-                            <div className="options">
-                                {task.content.options.map((opt, idx) => (
-                                    <label key={idx} className="option">
-                                        <input
-                                            type="radio"
-                                            name="answer"
-                                            value={opt}
-                                            checked={selected === opt}
-                                            onChange={(e) => setSelected(e.target.value)}
-                                        />
-                                        {opt}
-                                    </label>
-                                ))}
-                            </div>
-                        )}
+                    {(currentQuestion.type.toLowerCase() === "quiz" ||
+                        currentQuestion.type.toLowerCase() === "multiple_choice") && (
+                        <div className="options">
+                            {currentQuestion.options?.map((opt, idx) => (
+                                <label key={idx} className="option">
+                                    <input
+                                        type="radio"
+                                        name="answer"
+                                        value={opt}
+                                        checked={selected === opt}
+                                        onChange={(e) => setSelected(e.target.value)}
+                                    />
+                                    {opt}
+                                </label>
+                            ))}
+                        </div>
+                    )}
 
-                    {task.content.type.toLowerCase() === "text" && (
+                    {currentQuestion.type.toLowerCase() === "text" && (
                         <input
                             type="text"
                             className="text-answer"
@@ -145,67 +156,48 @@ export default function TaskExecutionPage() {
                         />
                     )}
 
-                    {task.content.type.toLowerCase() === "image" &&
-                        task.content.options && (
-                            <div className="options images">
-                                {task.content.options.map((opt, idx) => (
-                                    <label key={idx} className="image-option">
-                                        <input
-                                            type="radio"
-                                            name="answer"
-                                            value={opt}
-                                            checked={selected === opt}
-                                            onChange={(e) => setSelected(e.target.value)}
-                                        />
-                                        <img src={opt} alt={`Вариант ${idx + 1}`}/>
-                                    </label>
-                                ))}
-                            </div>
-                        )}
-                </div>
+                    {currentQuestion.type.toLowerCase() === "image" && (
+                        <div className="options images">
+                            {currentQuestion.options?.map((opt, idx) => (
+                                <label key={idx} className="image-option">
+                                    <input
+                                        type="radio"
+                                        name="answer"
+                                        value={opt}
+                                        checked={selected === opt}
+                                        onChange={(e) => setSelected(e.target.value)}
+                                    />
+                                    <img src={opt} alt={`Вариант ${idx + 1}`}/>
+                                </label>
+                            ))}
+                        </div>
+                    )}
 
-                {/*моковое типо может быть много вопросов*/}
-                <div className="task-card">
-                    <p className="task-question">{task.content.question}</p>
-
-                    {(task.content.type.toLowerCase() === "quiz" ||
-                            task.content.type.toLowerCase() === "multiple_choice") &&
-                        task.content.options && (
-                            <div className="options">
-                                {task.content.options.map((opt, idx) => (
-                                    <label key={idx} className="option">
-                                        <input
-                                            type="radio"
-                                            name="answer"
-                                            value={opt}
-                                            checked={selected === opt}
-                                            onChange={(e) => setSelected(e.target.value)}
-                                        />
-                                        {opt}
-                                    </label>
-                                ))}
-                            </div>
-                        )}
+                    {showHint && currentQuestion.hint && (
+                        <div className="hint-box">
+                            💡 <strong>Подсказка:</strong> {currentQuestion.hint}
+                        </div>
+                    )}
                 </div>
 
                 {message && <p className="error">{message}</p>}
 
                 <div className="task-actions">
-                    <button
-                        className="finish-btn"
-                        onClick={handleFinish}
-                        disabled={submitting}
-                    >
-                        Завершить
+                    <button className="finish-btn" onClick={handleNext} disabled={submitting}>
+                        {currentIndex < task.content.questionDtos.length - 1 ? "Далее" : "Завершить"}
                     </button>
+
                     {attempts >= 3 && (
-                        <button
-                            className="giveup-btn"
-                            onClick={handleGiveUp}
-                            disabled={submitting}
-                        >
-                            Сдаться
-                        </button>
+                        <div className="help-actions">
+                            {!showHint && currentQuestion.hint && (
+                                <button className="hint-btn" onClick={() => setShowHint(true)}>
+                                    Подсказка
+                                </button>
+                            )}
+                            <button className="giveup-btn" onClick={() => finishWithScore(0)} disabled={submitting}>
+                                Сдаться
+                            </button>
+                        </div>
                     )}
                 </div>
             </main>
@@ -213,3 +205,4 @@ export default function TaskExecutionPage() {
         </div>
     );
 }
+

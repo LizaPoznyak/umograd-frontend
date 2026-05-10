@@ -1,0 +1,151 @@
+.create-task-form {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.form-section h3, .questions-section h3 {
+    margin-bottom: 20px;
+    color: #333;
+    border-left: 4px solid #6e8efb;
+    padding-left: 15px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #555;
+}
+
+.sub-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #777;
+    margin-bottom: 10px;
+}
+
+.create-task-form input,
+.create-task-form textarea,
+.create-task-form select {
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: border-color 0.2s;
+}
+
+.create-task-form input:focus {
+    border-color: #6e8efb;
+    outline: none;
+}
+
+.row {
+    display: flex;
+    gap: 20px;
+}
+
+.row .input-group {
+    flex: 1;
+}
+
+.question-card {
+    background: #fcfcfc;
+    border: 1px solid #f0f0f0;
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 25px;
+    position: relative;
+}
+
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.card-number {
+    font-weight: 800;
+    color: #6e8efb;
+    font-size: 18px;
+}
+
+.remove-q-btn {
+    background: #fff0f0;
+    color: #ff4d4d;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.options-container {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #fff;
+    border-radius: 10px;
+}
+
+.option-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.option-row input {
+    flex: 1;
+}
+
+.btn-mini-del {
+    background: #eee;
+    border: none;
+    width: 40px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-mini-add {
+    background: transparent;
+    border: 1px dashed #ccc;
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    color: #888;
+    cursor: pointer;
+    margin-top: 5px;
+}
+
+.add-question-btn {
+    background: #f8faff;
+    border: 2px dashed #6e8efb;
+    color: #6e8efb;
+    padding: 20px;
+    border-radius: 15px;
+    cursor: pointer;
+    width: 100%;
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.save-task-btn {
+    background: linear-gradient(135deg, #6e8efb, #a777e3);
+    color: white;
+    border: none;
+    padding: 20px;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(110, 142, 251, 0.2);
+}

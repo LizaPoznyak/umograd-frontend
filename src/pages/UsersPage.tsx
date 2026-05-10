@@ -1,14 +1,19 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getUsers, deleteUser, changeRole } from "../api/users";
 import type { UserResponse } from "../types/user";
 import Alert from "../components/Alert";
 import Loader from "../components/Loader";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import "../styles/Users.css";
 
 export default function UsersPage() {
     const [users, setUsers] = useState<UserResponse[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         loadUsers();
@@ -53,49 +58,74 @@ export default function UsersPage() {
     }
 
     return (
-        <div>
-            <h2>Управление пользователями</h2>
+        <div className="app-layout">
+            <Navbar />
+            <main className="app-main">
+                <div className="admin-header">
+                    <h2>Управление пользователями</h2>
+                    <button className="nav-tasks-btn" onClick={() => navigate("/tasks-admin")}>
+                        К списку заданий
+                    </button>
+                </div>
 
-            {loading && <Loader />}
-            <Alert type="error" message={error} />
-            <Alert type="success" message={success} />
+                <Alert type="error" message={error} />
+                <Alert type="success" message={success} />
 
-            {!loading && !error && (
-                <table border={1} cellPadding={5} style={{ borderCollapse: "collapse" }}>
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Логин</th>
-                        <th>Email</th>
-                        <th>Роли</th>
-                        <th>Действия</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {users.map((u) => (
-                        <tr key={u.id}>
-                            <td>{u.id}</td>
-                            <td>{u.username}</td>
-                            <td>{u.email}</td>
-                            <td>{u.roles.join(", ")}</td>
-                            <td>
-                                <button onClick={() => handleDelete(u.id)}>Удалить</button>
-                                {!u.roles.includes("ROLE_PARENT") && (
-                                    <button onClick={() => handleChangeRole(u.id, "ROLE_PARENT")}>
-                                        Сделать родителем
-                                    </button>
-                                )}
-                                {!u.roles.includes("ROLE_MODERATOR") && (
-                                    <button onClick={() => handleChangeRole(u.id, "ROLE_MODERATOR")}>
-                                        Сделать модератором
-                                    </button>
-                                )}
-                            </td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
-            )}
+                {loading ? (
+                    <Loader />
+                ) : (
+                    <div className="table-container">
+                        <table className="users-table">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Логин</th>
+                                <th>Email</th>
+                                <th>Текущие роли</th>
+                                <th>Изменить роль</th>
+                                <th>Действие</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {users.map((u) => (
+                                <tr key={u.id}>
+                                    <td>{u.id}</td>
+                                    <td><strong>{u.username}</strong></td>
+                                    <td>{u.email}</td>
+                                    <td>
+                                        {u.roles.map(role => (
+                                            <span key={role} className={`role-badge ${role.toLowerCase()}`}>
+                                                    {role.replace("ROLE_", "")}
+                                                </span>
+                                        ))}
+                                    </td>
+                                    <td>
+                                        <div className="role-actions">
+                                            {!u.roles.includes("ROLE_PARENT") && (
+                                                <button className="btn-role parent" onClick={() => handleChangeRole(u.id, "ROLE_PARENT")}>
+                                                    Родитель
+                                                </button>
+                                            )}
+                                            {!u.roles.includes("ROLE_MODERATOR") && (
+                                                <button className="btn-role mod" onClick={() => handleChangeRole(u.id, "ROLE_MODERATOR")}>
+                                                    Модератор
+                                                </button>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <button className="btn-delete" onClick={() => handleDelete(u.id)}>
+                                            Удалить
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </main>
+            <Footer />
         </div>
     );
 }
