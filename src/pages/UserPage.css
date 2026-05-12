@@ -202,10 +202,6 @@
     font-weight: 600;
 }
 
-/* ... (весь твой предыдущий CSS остается без изменений) ... */
-
-/* Дополнения для режима редактирования */
-
 .profile-actions-edit {
     display: flex;
     align-items: center;
@@ -267,6 +263,6 @@
     font-size: 16px;
     font-weight: 700;
     color: #6F7376;
-    margin-bottom: -15px; /* Чтобы плотнее к инпуту */
+    margin-bottom: -15px;
 }
 
