@@ -178,3 +178,95 @@
 .profile-cancel-btn:hover {
     text-decoration: underline;
 }
+
+.register-input.input-disabled {
+    background-color: #f8f9fa;
+    color: #adb5bd;
+    cursor: not-allowed;
+    border: 1px solid #e9ecef;
+}
+
+.input-hint {
+    font-size: 11px;
+    color: #6c757d;
+    margin-top: 4px;
+    font-style: italic;
+}
+
+.input-label {
+    display: block;
+    font-size: 13px;
+    color: #495057;
+    margin-bottom: 5px;
+    margin-top: 10px;
+    font-weight: 600;
+}
+
+/* ... (весь твой предыдущий CSS остается без изменений) ... */
+
+/* Дополнения для режима редактирования */
+
+.profile-actions-edit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.profile-save-btn {
+    background: linear-gradient(90deg, #689ECA 0%, #8FDADB 100%);
+    border: none;
+    border-radius: 30px;
+    padding: 10px 40px;
+    color: #fff;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.profile-save-btn:hover {
+    transform: scale(1.03);
+}
+
+.profile-cancel-link {
+    background: none;
+    border: none;
+    color: #6F7376; /* Цвет как у текстов */
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 15px;
+    text-decoration: underline;
+    font-family: 'Nunito', sans-serif;
+    opacity: 0.8;
+}
+
+.profile-cancel-link:hover {
+    opacity: 1;
+}
+
+.register-input {
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 15px;
+    padding: 10px 15px;
+    font-family: 'Nunito', sans-serif;
+    color: #6F7376;
+}
+
+.register-input.input-disabled {
+    background: rgba(255, 255, 255, 0.2);
+    color: #a0a4a8;
+    cursor: not-allowed;
+    border: 1px dashed #6F7376;
+}
+
+.input-label {
+    font-size: 16px;
+    font-weight: 700;
+    color: #6F7376;
+    margin-bottom: -15px; /* Чтобы плотнее к инпуту */
+}
+

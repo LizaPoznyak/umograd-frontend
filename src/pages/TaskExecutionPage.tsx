@@ -6,7 +6,7 @@ import Footer from "../components/Footer.tsx";
 import "../styles/TaskExecutionPage.css";
 
 type questionDtosDto = {
-    type: string; // "quiz", "text", "image", "multiple_choice"
+    type: string;
     question: string;
     options?: string[];
     answer: string;
@@ -14,7 +14,7 @@ type questionDtosDto = {
 };
 
 type TaskContentDto = {
-    questionDtos: questionDtosDto[]; // Теперь это массив
+    questionDtos: questionDtosDto[];
 };
 
 type TaskDto = {
@@ -64,8 +64,30 @@ export default function TaskExecutionPage() {
                 method: "PUT",
                 headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
             });
+
             if (res.ok) {
                 const result = await res.json();
+
+                try {
+                    const childId = localStorage.getItem("childId");
+                    const analyticRes = await fetch(`http://localhost:8182/api/v1/analytics/achievements/process/${childId}`, {
+                        method: "POST",
+                        headers: {
+                            "Authorization": `Bearer ${localStorage.getItem("accessToken")}`,
+                            "Content-Type": "application/json"
+                        },
+                    });
+
+                    if (analyticRes.ok) {
+                        const earned = await analyticRes.json();
+                        if (earned && earned.length > 0) {
+                            alert(`Поздравляем! Получены награды: ${earned.map((a: any) => a.name).join(", ")}`);
+                        }
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+
                 alert(`Задание выполнено! Баллы: ${result.score}. Попыток: ${attempts}.`);
                 navigate("/tasks");
             }
@@ -98,7 +120,7 @@ export default function TaskExecutionPage() {
         if (currentIndex < (task?.content.questionDtos.length || 0) - 1) {
             setCurrentIndex(prev => prev + 1);
         } else {
-            await finishWithScore(1);
+            await finishWithScore(100);
         }
     };
 
@@ -205,4 +227,3 @@ export default function TaskExecutionPage() {
         </div>
     );
 }
-

@@ -14,7 +14,6 @@ const roleMap: Record<string, string> = {
     ROLE_MODERATOR: "Модератор",
 };
 
-// функция для корректного подсчёта возраста
 function calcAge(dateStr: string): number {
     const birth = new Date(dateStr);
     const today = new Date();
@@ -59,9 +58,7 @@ export default function UserPage() {
             if (accessToken) localStorage.setItem("accessToken", accessToken);
             if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
 
-            // ⚡️ теперь берём профиль прямо из ответа
             setProfile(updatedProfile);
-
             setIsEditing(false);
         } catch (err) {
             console.error("Ошибка обновления профиля", err);
@@ -78,7 +75,6 @@ export default function UserPage() {
             <Navbar />
             <main className="app-main">
                 <div className="profile-container">
-                    {/* Аватар */}
                     <div className={`profile-avatar ${isEditing ? "editable" : ""}`}>
                         {isEditing ? (
                             <label className="register-avatar">
@@ -115,7 +111,6 @@ export default function UserPage() {
                         )}
                     </div>
 
-                    {/* Поля профиля */}
                     <div className="profile-fields">
                         <h2 className="profile-title">Профиль</h2>
 
@@ -137,13 +132,13 @@ export default function UserPage() {
                                     <div className="profile-row">
                                         <span className="profile-label">Роль:</span>
                                         <span className="profile-value">
-                      {Array.isArray(profile.roles)
-                          ? profile.roles.map((r) => roleMap[r] || r).join(", ")
-                          : "—"}
-                    </span>
+                                            {Array.isArray(profile.roles)
+                                                ? profile.roles.map((r) => roleMap[r] || r).join(", ")
+                                                : "—"}
+                                        </span>
                                     </div>
 
-                                    {isChild && profile.birthDate && (
+                                    {profile.birthDate && (
                                         <div className="profile-row">
                                             <span className="profile-label">Возраст:</span>
                                             <span className="profile-value">{calcAge(profile.birthDate)} лет</span>
@@ -167,6 +162,7 @@ export default function UserPage() {
                             </div>
                         ) : (
                             <form onSubmit={handleSave} className="profile-form">
+                                <label className="input-label">Логин</label>
                                 <input
                                     type="text"
                                     className="register-input"
@@ -176,6 +172,7 @@ export default function UserPage() {
                                     required
                                 />
 
+                                <label className="input-label">Email</label>
                                 <input
                                     type="email"
                                     className="register-input"
@@ -184,23 +181,26 @@ export default function UserPage() {
                                     onChange={(e) => setForm({ ...form, email: e.target.value })}
                                 />
 
-                                {isChild && (
+                                <label className="input-label">Дата рождения</label>
+                                <div className="profile-input-group">
                                     <input
                                         type="date"
-                                        className="register-input"
+                                        className={`register-input ${isChild ? "input-disabled" : ""}`}
                                         value={form.birthDate || ""}
                                         onChange={(e) => setForm({ ...form, birthDate: e.target.value })}
-                                        required
+                                        disabled={isChild}
+                                        max={new Date().toISOString().split("T")[0]}
                                     />
-                                )}
+                                    {isChild && (
+                                        <p className="input-hint">Изменение недоступно</p>
+                                    )}
+                                </div>
 
-                                <div className="register-actions">
-                                    <button type="submit" className="register-button">
-                                        Сохранить
-                                    </button>
+                                <div className="profile-actions-edit">
+                                    <button type="submit" className="profile-save-btn">Сохранить</button>
                                     <button
                                         type="button"
-                                        className="profile-cancel-btn"
+                                        className="profile-cancel-link"
                                         onClick={() => setIsEditing(false)}
                                     >
                                         Отмена

@@ -10,16 +10,15 @@ import TasksPage from "./pages/TasksPage";
 import UserPage from "./pages/UserPage";
 import TasksAdminPage from "./pages/TasksAdminPage";
 import TaskExecutionPage from "./pages/TaskExecutionPage";
-import AchievementsPage from "./pages/AchievementsPage.tsx"; // 👈 добавляем
+import AchievementsPage from "./pages/AchievementsPage.tsx";
+import AccessGuard from "./components/AccessGuard.tsx";
 
 export const router = createBrowserRouter([
     {
         path: "/",
-        // element: <Layout />,
         children: [
             { index: true, element: <LoginPage /> },
             { path: "register", element: <RegisterPage /> },
-
             {
                 path: "users",
                 element: (
@@ -51,7 +50,11 @@ export const router = createBrowserRouter([
                 path: "tasks",
                 element: (
                     <ProtectedRoute
-                        element={<TasksPage />}
+                        element={
+                            <AccessGuard>
+                                <TasksPage />
+                            </AccessGuard>
+                        }
                         allowedRoles={["ROLE_PARENT", "ROLE_CHILD"]}
                     />
                 ),
@@ -60,7 +63,11 @@ export const router = createBrowserRouter([
                 path: "tasks/:taskId/execute/:taskResultId",
                 element: (
                     <ProtectedRoute
-                        element={<TaskExecutionPage />}
+                        element={
+                            <AccessGuard>
+                                <TaskExecutionPage />
+                            </AccessGuard>
+                        }
                         allowedRoles={["ROLE_CHILD"]}
                     />
                 ),
