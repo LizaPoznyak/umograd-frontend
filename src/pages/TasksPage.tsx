@@ -21,32 +21,45 @@ export default function TasksPage() {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [loading, setLoading] = useState(false);
     const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState<"recommend" | "all">("recommend");
+    const [activeTab, setActiveTab] = useState<"recommend" | "all">("all");
+    const [recommendedDifficulty, setRecommendedDifficulty] = useState<string | null>(null);
+    const [recommendationMessage, setRecommendationMessage] = useState<string>("");
 
     const navigate = useNavigate();
 
     useEffect(() => {
-        const loadTasks = async () => {
+        const loadPageData = async () => {
             try {
                 setLoading(true);
-                const res = await fetch("http://localhost:8181/tasks", {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-                    },
+                const token = localStorage.getItem("accessToken");
+                const childId = localStorage.getItem("childId");
+
+                const tasksRes = await fetch("http://localhost:8181/tasks", {
+                    headers: { Authorization: `Bearer ${token}` },
                 });
-                if (res.ok) {
-                    const data = await res.json();
-                    setTasks(data);
-                } else {
-                    console.error("Ошибка загрузки заданий", res.status);
+                if (tasksRes.ok) {
+                    const tasksData = await tasksRes.json();
+                    setTasks(tasksData);
+                }
+
+                if (childId) {
+                    const adaptiveRes = await fetch(`http://localhost:8182/api/v1/analytics/recommendation/${childId}`, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                    if (adaptiveRes.ok) {
+                        const adaptiveData = await adaptiveRes.json();
+                        setRecommendedDifficulty(adaptiveData.recommendedDifficulty);
+                        setRecommendationMessage(adaptiveData.message);
+                        setActiveTab("recommend");
+                    }
                 }
             } catch (err) {
-                console.error("Ошибка сети", err);
+                console.error(err);
             } finally {
                 setLoading(false);
             }
         };
-        loadTasks();
+        loadPageData();
     }, []);
 
     const handleStart = async (taskId: number | null) => {
@@ -78,23 +91,25 @@ export default function TasksPage() {
                 alert("Ошибка при старте задания");
             }
         } catch (err) {
-            console.error("Ошибка сети", err);
+            console.error(err);
         } finally {
             setLoading(false);
         }
     };
 
-    // Фильтрация по сложности
-    const filteredTasks = selectedDifficulty
-        ? tasks.filter((t) => t.difficulty === selectedDifficulty)
+    const baseFilteredTasks = activeTab === "recommend" && recommendedDifficulty
+        ? tasks.filter((t) => t.difficulty === recommendedDifficulty)
         : tasks;
+
+    const finalFilteredTasks = selectedDifficulty
+        ? baseFilteredTasks.filter((t) => t.difficulty === selectedDifficulty)
+        : baseFilteredTasks;
 
     return (
         <div className="app-layout">
             <Navbar />
             <main className="app-main tasks-center">
                 <div className="tasks-container">
-                    {/* Панель фильтрации */}
                     <div className="tasks-bar">
                         <div className="tabs">
                             <div
@@ -127,25 +142,19 @@ export default function TasksPage() {
 
                             <div className="filter-options">
                                 <div
-                                    className={`filter-option ${
-                                        selectedDifficulty === "EASY" ? "active" : ""
-                                    }`}
+                                    className={`filter-option ${selectedDifficulty === "EASY" ? "active" : ""}`}
                                     onClick={() => setSelectedDifficulty("EASY")}
                                 >
                                     🔥
                                 </div>
                                 <div
-                                    className={`filter-option ${
-                                        selectedDifficulty === "MEDIUM" ? "active" : ""
-                                    }`}
+                                    className={`filter-option ${selectedDifficulty === "MEDIUM" ? "active" : ""}`}
                                     onClick={() => setSelectedDifficulty("MEDIUM")}
                                 >
                                     🔥🔥
                                 </div>
                                 <div
-                                    className={`filter-option ${
-                                        selectedDifficulty === "HARD" ? "active" : ""
-                                    }`}
+                                    className={`filter-option ${selectedDifficulty === "HARD" ? "active" : ""}`}
                                     onClick={() => setSelectedDifficulty("HARD")}
                                 >
                                     🔥🔥🔥
@@ -154,40 +163,65 @@ export default function TasksPage() {
                         </div>
                     </div>
 
-                    {/* Список заданий */}
-                    <div className={`tasks-list ${filteredTasks.length === 0 ? "empty" : ""}`}>
-                        {filteredTasks.length === 0 ? (
+                    {activeTab === "recommend" && recommendationMessage && (
+                        <div style={{
+                            background: "rgba(74, 144, 226, 0.15)",
+                            padding: "15px 25px",
+                            borderRadius: "15px",
+                            marginBottom: "20px",
+                            fontFamily: "Nunito, sans-serif",
+                            color: "#2d3748",
+                            fontSize: "14px",
+                            fontWeight: 600,
+                            borderLeft: "5px solid #4A90E2",
+                            boxSizing: "border-box"
+                        }}>
+                            💡 {recommendationMessage}
+                        </div>
+                    )}
+
+                    <div className={`tasks-list ${finalFilteredTasks.length === 0 ? "empty" : ""}`}>
+                        {finalFilteredTasks.length === 0 ? (
                             <div className="no-tasks">
                                 Заданий с такой сложностью пока нет
                             </div>
                         ) : (
-                            filteredTasks.map((task) => (
-                                <div key={task.id ?? task.sourceId} className="tasks-item">
-                                    <img src={Image} alt="Картинка задания" className="tasks-img"/>
-                                    <div className="tasks-info-btn">
-                                        <div className="tasks-info">
-                                            <p className="tasks-title">{task.title}</p>
-                                            <div className="tasks-description-diff">
-                                                <p className="tasks-description" title={task.description}>
-                                                    {task.description}
-                                                </p>
-                                                <p className="tasks-diff">
-                                                    {task.difficulty === "EASY" && "🔥"}
-                                                    {task.difficulty === "MEDIUM" && "🔥🔥"}
-                                                    {task.difficulty === "HARD" && "🔥🔥🔥"}
-                                                </p>
+                            finalFilteredTasks.map((task) => {
+                                const isRec = recommendedDifficulty === task.difficulty;
+                                return (
+                                    <div
+                                        key={task.id ?? task.sourceId}
+                                        className={`tasks-item ${isRec ? "is-recommended-card" : ""}`}
+                                    >
+                                        {isRec && (
+                                            <span className="task-recommend-badge">Рекомендовано</span>
+                                        )}
+                                        <img src={Image} alt="Картинка задания" className="tasks-img"/>
+                                        <div className="tasks-info-btn">
+                                            <div className="tasks-info">
+                                                <p className="tasks-title">{task.title}</p>
+                                                <div className="tasks-description-diff">
+                                                    <p className="tasks-description" title={task.description}>
+                                                        {task.description}
+                                                    </p>
+                                                    <p className="tasks-diff">
+                                                        {task.difficulty === "EASY" && "🔥"}
+                                                        {task.difficulty === "MEDIUM" && "🔥🔥"}
+                                                        {task.difficulty === "HARD" && "🔥🔥🔥"}
+                                                    </p>
+                                                </div>
                                             </div>
+                                            <button
+                                                className="tasks-btn"
+                                                onClick={() => handleStart(task.id)}
+                                                disabled={loading}
+                                            >
+                                                {loading ? "Старт..." : "Начать"}
+                                            </button>
                                         </div>
-                                        <button
-                                            className="tasks-btn"
-                                            onClick={() => handleStart(task.id)}
-                                            disabled={loading}
-                                        >
-                                            {loading ? "Старт..." : "Начать"}
-                                        </button>
                                     </div>
-                                </div>
-                            ))
+                                );
+                            })
                         )}
                     </div>
                 </div>

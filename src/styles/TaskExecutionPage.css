@@ -1,177 +1,209 @@
-.task-exec {
+.execution-layout {
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
+}
+
+.task-exec {
+    flex: 1;
+    display: flex;
     align-items: center;
-    margin: 40px auto;
-    max-width: 600px;
+    justify-content: center;
     padding: 20px;
-    background: rgba(255,255,255,0.4);
-    border-radius: 20px;
+    box-sizing: border-box;
+}
+
+.task-execution-box {
+    width: 100%;
+    max-width: 700px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 30px;
+    padding: 30px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .task-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 90%;
+    border-bottom: 2px solid rgba(111, 115, 118, 0.1);
+    padding-bottom: 15px;
 }
 
 .task-title {
-    text-align: center;
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 700;
-    margin-bottom: 20px;
-    color: #545d61;
+    color: #6F7376;
+    font-family: 'Nunito', sans-serif;
+    margin: 0 0 5px 0;
+}
+
+.task-progress-text {
+    font-size: 14px;
+    color: #888;
+    margin: 0;
+    font-family: 'Nunito', sans-serif;
 }
 
 .attempts-heart {
     display: flex;
     align-items: center;
-    gap: 6px;
-    background: #ffcdde;
+    gap: 5px;
+    font-size: 20px;
+    background: white;
+    padding: 5px 15px;
     border-radius: 20px;
-    padding: 4px 10px;
-}
-
-.heart {
-    font-size: 18px;
-}
-
-.attempts-count {
-    font-weight: 700;
-    font-size: 16px;
-    color: #545d61;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
 .task-card {
-    width: 90%;                 /* уже, чем основной блок */
-    max-width: 500px;
-    margin: 0 auto 20px auto;   /* центрируем и даём отступ снизу */
-    background: rgba(255,255,255,0.8);
+    background: rgba(255, 255, 255, 0.6);
     border-radius: 20px;
-    padding: 20px;
+    padding: 25px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .task-question {
+    font-size: 20px;
     font-weight: 600;
-    font-size: 18px;
-    margin-bottom: 15px;
-    color: #545d61;
+    color: #495057;
+    margin: 0;
+    font-family: 'Nunito', sans-serif;
 }
 
 .options {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
 }
 
 .option {
-    font-size: 16px;
-    font-weight: 500;
-    color: #545d61;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    background: white;
+    border: 1px solid rgba(0,0,0,0.05);
+    border-radius: 12px;
     cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    color: #495057;
+    transition: background 0.2s;
+}
+
+.option:hover {
+    background: #f8f9fa;
 }
 
 .text-answer {
     width: 100%;
-    padding: 10px;
+    padding: 12px 15px;
+    border: 1px solid rgba(0,0,0,0.1);
     border-radius: 12px;
-    border: 1px solid #ccc;
-    font-size: 16px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    outline: none;
+    box-sizing: border-box;
 }
 
 .options.images {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+}
+
+.image-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    padding: 10px;
+    border-radius: 15px;
+    cursor: pointer;
+    border: 1px solid rgba(0,0,0,0.05);
 }
 
 .image-option img {
-    width: 120px;
-    height: 120px;
-    border-radius: 12px;
-    object-fit: cover;
-    border: 2px solid transparent;
-    cursor: pointer;
+    width: 100%;
+    max-height: 120px;
+    object-fit: contain;
+    border-radius: 10px;
 }
 
-.image-option input:checked + img {
-    border-color: #ff7f82;
+.hint-box {
+    background: #fff9db;
+    border-left: 4px solid #fcc419;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #666;
+    font-family: 'Nunito', sans-serif;
 }
 
 .error {
-    color: red;
-    margin-bottom: 10px;
+    color: #fa5252;
+    font-weight: 600;
+    font-size: 14px;
+    margin: 0;
+    font-family: 'Nunito', sans-serif;
 }
 
 .task-actions {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
-    gap: 15px;
-    margin-top: 30px;
+    margin-top: 10px;
+}
+
+.finish-btn {
+    background: linear-gradient(90deg, #689ECA 0%, #8FDADB 100%);
+    border: none;
+    border-radius: 30px;
+    padding: 12px 35px;
+    color: #fff;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    font-size: 15px;
 }
 
 .help-actions {
     display: flex;
     gap: 10px;
-    width: 100%;
-    max-width: 400px;
-}
-
-.finish-btn, .hint-btn, .giveup-btn {
-    padding: 12px 24px;
-    border-radius: 12px;
-    border: none;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.finish-btn {
-    background: linear-gradient(135deg, #6e8efb, #a777e3);
-    color: white;
-    width: 100%;
-    max-width: 400px;
 }
 
 .hint-btn {
-    background-color: #ffb74d;
-    color: white;
-    flex: 1;
+    background: #f1f3f5;
+    border: 1px solid #dee2e6;
+    border-radius: 30px;
+    padding: 10px 20px;
+    color: #495057;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    font-size: 14px;
 }
 
 .giveup-btn {
-    background-color: #ef5350;
-    color: white;
-    flex: 1;
+    background: #ffc9c9;
+    border: none;
+    border-radius: 30px;
+    padding: 10px 20px;
+    color: #fa5252;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    font-size: 14px;
 }
 
 .finish-btn:hover, .hint-btn:hover, .giveup-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    filter: brightness(1.1);
-}
-
-.finish-btn:disabled, .hint-btn:disabled, .giveup-btn:disabled {
-    filter: grayscale(1);
-    cursor: not-allowed;
-    transform: none;
-}
-
-.hint-box {
-    margin-top: 20px;
-    padding: 15px;
-    background-color: #fff9c4;
-    border-left: 5px solid #fbc02d;
-    border-radius: 8px;
-    font-size: 15px;
-    color: #5d4037;
-    animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+    opacity: 0.9;
 }

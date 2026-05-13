@@ -133,94 +133,96 @@ export default function TaskExecutionPage() {
     }
 
     return (
-        <div className="app-layout">
+        <div className="app-layout execution-layout">
             <Navbar/>
             <main className="app-main task-exec">
-                <div className="task-header">
-                    <div>
-                        <h2 className="task-title">{task.title}</h2>
-                        <p>Вопрос {currentIndex + 1} из {task.content.questionDtos.length}</p>
+                <div className="task-execution-box">
+                    <div className="task-header">
+                        <div>
+                            <h2 className="task-title">{task.title}</h2>
+                            <p className="task-progress-text">Вопрос {currentIndex + 1} из {task.content.questionDtos.length}</p>
+                        </div>
+                        <div className="attempts-heart">
+                            <span className="heart">❤️</span>
+                            <span className="attempts-count">{attempts}</span>
+                        </div>
                     </div>
-                    <div className="attempts-heart">
-                        <span className="heart">❤️</span>
-                        <span className="attempts-count">{attempts}</span>
+
+                    <div className="task-card">
+                        <p className="task-question">{currentQuestion.question}</p>
+
+                        {(currentQuestion.type.toLowerCase() === "quiz" ||
+                            currentQuestion.type.toLowerCase() === "multiple_choice") && (
+                            <div className="options">
+                                {currentQuestion.options?.map((opt, idx) => (
+                                    <label key={idx} className="option">
+                                        <input
+                                            type="radio"
+                                            name="answer"
+                                            value={opt}
+                                            checked={selected === opt}
+                                            onChange={(e) => setSelected(e.target.value)}
+                                        />
+                                        {opt}
+                                    </label>
+                                ))}
+                            </div>
+                        )}
+
+                        {currentQuestion.type.toLowerCase() === "text" && (
+                            <input
+                                type="text"
+                                className="text-answer"
+                                value={selected}
+                                onChange={(e) => setSelected(e.target.value)}
+                                placeholder="Введи свой ответ"
+                            />
+                        )}
+
+                        {currentQuestion.type.toLowerCase() === "image" && (
+                            <div className="options images">
+                                {currentQuestion.options?.map((opt, idx) => (
+                                    <label key={idx} className="image-option">
+                                        <input
+                                            type="radio"
+                                            name="answer"
+                                            value={opt}
+                                            checked={selected === opt}
+                                            onChange={(e) => setSelected(e.target.value)}
+                                        />
+                                        <img src={opt} alt={`Вариант ${idx + 1}`}/>
+                                    </label>
+                                ))}
+                            </div>
+                        )}
+
+                        {showHint && currentQuestion.hint && (
+                            <div className="hint-box">
+                                💡 <strong>Подсказка:</strong> {currentQuestion.hint}
+                            </div>
+                        )}
                     </div>
-                </div>
 
-                <div className="task-card">
-                    <p className="task-question">{currentQuestion.question}</p>
+                    {message && <p className="error">{message}</p>}
 
-                    {(currentQuestion.type.toLowerCase() === "quiz" ||
-                        currentQuestion.type.toLowerCase() === "multiple_choice") && (
-                        <div className="options">
-                            {currentQuestion.options?.map((opt, idx) => (
-                                <label key={idx} className="option">
-                                    <input
-                                        type="radio"
-                                        name="answer"
-                                        value={opt}
-                                        checked={selected === opt}
-                                        onChange={(e) => setSelected(e.target.value)}
-                                    />
-                                    {opt}
-                                </label>
-                            ))}
-                        </div>
-                    )}
+                    <div className="task-actions">
+                        <button className="finish-btn" onClick={handleNext} disabled={submitting}>
+                            {currentIndex < task.content.questionDtos.length - 1 ? "Далее" : "Завершить"}
+                        </button>
 
-                    {currentQuestion.type.toLowerCase() === "text" && (
-                        <input
-                            type="text"
-                            className="text-answer"
-                            value={selected}
-                            onChange={(e) => setSelected(e.target.value)}
-                            placeholder="Введи свой ответ"
-                        />
-                    )}
-
-                    {currentQuestion.type.toLowerCase() === "image" && (
-                        <div className="options images">
-                            {currentQuestion.options?.map((opt, idx) => (
-                                <label key={idx} className="image-option">
-                                    <input
-                                        type="radio"
-                                        name="answer"
-                                        value={opt}
-                                        checked={selected === opt}
-                                        onChange={(e) => setSelected(e.target.value)}
-                                    />
-                                    <img src={opt} alt={`Вариант ${idx + 1}`}/>
-                                </label>
-                            ))}
-                        </div>
-                    )}
-
-                    {showHint && currentQuestion.hint && (
-                        <div className="hint-box">
-                            💡 <strong>Подсказка:</strong> {currentQuestion.hint}
-                        </div>
-                    )}
-                </div>
-
-                {message && <p className="error">{message}</p>}
-
-                <div className="task-actions">
-                    <button className="finish-btn" onClick={handleNext} disabled={submitting}>
-                        {currentIndex < task.content.questionDtos.length - 1 ? "Далее" : "Завершить"}
-                    </button>
-
-                    {attempts >= 3 && (
-                        <div className="help-actions">
-                            {!showHint && currentQuestion.hint && (
-                                <button className="hint-btn" onClick={() => setShowHint(true)}>
-                                    Подсказка
+                        {attempts >= 3 && (
+                            <div className="help-actions">
+                                {!showHint && currentQuestion.hint && (
+                                    <button className="hint-btn" onClick={() => setShowHint(true)}>
+                                        Подсказка
+                                    </button>
+                                )}
+                                <button className="giveup-btn" onClick={() => finishWithScore(0)} disabled={submitting}>
+                                    Сдаться
                                 </button>
-                            )}
-                            <button className="giveup-btn" onClick={() => finishWithScore(0)} disabled={submitting}>
-                                Сдаться
-                            </button>
-                        </div>
-                    )}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </main>
             <Footer/>

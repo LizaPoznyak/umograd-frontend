@@ -7,6 +7,7 @@ import "../components/Layout.css";
 import Footer from "../components/Footer.tsx";
 import closeIcon from "../assets/close.png";
 import { useUser } from "../context/UserContext";
+import ProgressChart from "../components/ProgressChart.tsx";
 
 const roleMap: Record<string, string> = {
     ROLE_CHILD: "Ребёнок",
@@ -30,6 +31,11 @@ export default function UserPage() {
     const [isEditing, setIsEditing] = useState(false);
     const [form, setForm] = useState<Partial<UserProfile>>({});
     const [avatar, setAvatar] = useState<string | null>(null);
+
+    const [showChart, setShowChart] = useState(false);
+    const [chartData, setChartData] = useState([]);
+    const [loadingChart, setLoadingChart] = useState(false);
+    const [period, setPeriod] = useState<"day" | "week" | "month">("month");
 
     useEffect(() => {
         if (profile) {
@@ -64,6 +70,32 @@ export default function UserPage() {
             console.error("Ошибка обновления профиля", err);
         }
     }
+
+    const openStatistics = async (targetChildId: number, selectedPeriod = "month") => {
+        setLoadingChart(true);
+        setShowChart(true);
+        try {
+            const token = localStorage.getItem("accessToken");
+            const res = await fetch(`http://localhost:8182/api/v1/analytics/report/${targetChildId}?period=${selectedPeriod}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (res.ok) {
+                setChartData(await res.json());
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoadingChart(false);
+        }
+    };
+
+    const handlePeriodChange = (newPeriod: "day" | "week" | "month") => {
+        setPeriod(newPeriod);
+        setChartData([]);
+        if (profile?.id) {
+            openStatistics(profile.id, newPeriod);
+        }
+    };
 
     if (!profile) return <div>Загрузка...</div>;
 
@@ -157,7 +189,15 @@ export default function UserPage() {
                                     >
                                         Изменить
                                     </button>
-                                    <button className="profile-stats-btn">Статистика</button>
+
+                                    {isChild && (
+                                        <button
+                                            className="profile-stats-btn"
+                                            onClick={() => openStatistics(profile.id, period)}
+                                        >
+                                            Статистика
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         ) : (
@@ -192,7 +232,7 @@ export default function UserPage() {
                                         max={new Date().toISOString().split("T")[0]}
                                     />
                                     {isChild && (
-                                        <p className="input-hint">Изменение недоступно</p>
+                                        <p className="input-hint">Изменение доступно только родителям</p>
                                     )}
                                 </div>
 
@@ -212,6 +252,84 @@ export default function UserPage() {
                 </div>
             </main>
             <Footer />
+
+            {showChart && (
+                <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgba(0,0,0,0.5)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 }}>
+                    <div style={{ background: "#fff", padding: "30px", borderRadius: "30px", width: "550px", position: "relative", boxShadow: "0 10px 25px rgba(0,0,0,0.1)", fontFamily: "Nunito" }}>
+                        <h3 style={{ margin: "0 0 15px 0", color: "#6F7376", fontSize: "24px", fontWeight: 700 }}>Динамика успешности</h3>
+
+                        <button
+                            className="no-print"
+                            onClick={() => setShowChart(false)}
+                            style={{ position: "absolute", top: "20px", right: "20px", background: "none", border: "none", fontSize: "24px", cursor: "pointer", color: "#6F7376" }}
+                        >
+                            ×
+                        </button>
+
+                        <div className="no-print" style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+                            {(["day", "week", "month"] as const).map((p) => (
+                                <button
+                                    key={p}
+                                    onClick={() => handlePeriodChange(p)}
+                                    style={{
+                                        padding: "6px 15px",
+                                        borderRadius: "15px",
+                                        border: "none",
+                                        cursor: "pointer",
+                                        fontWeight: 700,
+                                        fontFamily: "Nunito",
+                                        fontSize: "13px",
+                                        backgroundColor: period === p ? "#4A90E2" : "#f1f3f5",
+                                        color: period === p ? "white" : "#6F7376",
+                                        transition: "all 0.2s"
+                                    }}
+                                >
+                                    {p === "day" ? "День" : p === "week" ? "Неделя" : "Месяц"}
+                                </button>
+                            ))}
+                        </div>
+
+                        {loadingChart ? (
+                            <div style={{ textAlign: "center", padding: "40px", color: "#6F7376" }}>Загрузка отчета...</div>
+                        ) : chartData.length === 0 ? (
+                            <div style={{
+                                textAlign: "center",
+                                padding: "40px",
+                                color: "#718096",
+                                fontSize: "16px",
+                                fontWeight: 600,
+                                background: "#f8f9fa",
+                                borderRadius: "20px"
+                            }}>
+                                💡 Недостаточно данных для анализа за этот период
+                            </div>
+                        ) : (
+                            <div>
+                                <ProgressChart data={chartData} />
+                                <div className="no-print" style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
+                                    <button
+                                        onClick={() => window.print()}
+                                        style={{
+                                            background: "linear-gradient(90deg, #7FCA68 0%, #A3DB8F 100%)",
+                                            border: "none",
+                                            borderRadius: "30px",
+                                            padding: "10px 25px",
+                                            color: "#fff",
+                                            fontWeight: 700,
+                                            fontFamily: "Nunito, sans-serif",
+                                            cursor: "pointer",
+                                            fontSize: "14px",
+                                            boxShadow: "0 4px 10px rgba(127, 202, 104, 0.2)"
+                                        }}
+                                    >
+                                        🖨️ Сохранить в PDF
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

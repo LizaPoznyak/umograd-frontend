@@ -204,7 +204,7 @@
 .tasks-description {
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;        /* чтобы длинные строки не толкали кнопку */
+    white-space: nowrap;       
 }
 .tasks-description[title] {
     cursor: help;
@@ -222,10 +222,10 @@
     flex-grow: 0;
 }
 .tasks-btn {
-    margin-left: auto;          /* кнопка уходит вправо, но в пределах карточки */
+    margin-left: auto;
     background: none;
     border: none;
-    padding: 0 4px;             /* небольшой внутренний зазор, чтобы не казалась прилипшей */
+    padding: 0 4px;
     font-family: 'Nunito', serif;
     font-weight: 700;
     font-size: 16px;
@@ -236,4 +236,33 @@
 }
 .tasks-btn:hover {
     color: #ffa2a4;
+}
+
+.tasks-item {
+    position: relative;
+}
+
+.is-recommended-card {
+    border: 2px solid #7FCA68 !important;
+    background: rgba(127, 202, 104, 0.08) !important;
+}
+
+.task-recommend-badge {
+    position: absolute;
+    top: 12px;
+    right: 15px;
+    font-size: 11px;
+    background-color: #7FCA68;
+    color: white;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    box-shadow: 0 2px 6px rgba(127, 202, 104, 0.3);
+    z-index: 10;
+}
+
+.tasks-container div[style*="background: rgba(74, 144, 226, 0.15)"] {
+    padding: 15px 25px !important; /* Увеличиваем левый отступ */
+    box-sizing: border-box;
 }

@@ -1,0 +1,129 @@
+.children-page-container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    width: 744px;
+    margin: 40px auto;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 30px;
+    padding: 30px;
+    box-sizing: border-box;
+}
+
+.children-page-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #6F7376;
+    font-family: 'Nunito', sans-serif;
+    text-align: center;
+    margin: 0;
+}
+
+.children-add-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background: rgba(255, 255, 255, 0.4);
+    padding: 20px;
+    border-radius: 20px;
+}
+
+.children-input {
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 15px;
+    padding: 10px 15px;
+    font-family: 'Nunito', sans-serif;
+    color: #6F7376;
+    font-size: 14px;
+    outline: none;
+}
+
+.children-add-btn {
+    background: linear-gradient(90deg, #7FCA68 0%, #A3DB8F 100%);
+    border: none;
+    border-radius: 30px;
+    padding: 12px;
+    color: #fff;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    font-size: 15px;
+    transition: transform 0.2s;
+}
+
+.children-add-btn:hover {
+    transform: scale(1.02);
+}
+
+.children-list-wrapper {
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 20px;
+    padding: 15px;
+    overflow: hidden;
+}
+
+.children-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Nunito', sans-serif;
+    color: #6F7376;
+}
+
+.children-table th {
+    text-align: left;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    border-bottom: 2px solid rgba(111, 115, 118, 0.2);
+}
+
+.children-table td {
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(111, 115, 118, 0.1);
+}
+
+.child-username {
+    font-weight: 700;
+}
+
+.child-table-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.child-stats-btn {
+    background: linear-gradient(90deg, #689ECA 0%, #8FDADB 100%);
+    border: none;
+    border-radius: 20px;
+    padding: 6px 15px;
+    color: #fff;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.child-delete-btn {
+    background: #FF8F8F;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 15px;
+    color: #fff;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.child-stats-btn:hover, .child-delete-btn:hover {
+    opacity: 0.9;
+}
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+}
