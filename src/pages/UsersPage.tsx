@@ -57,15 +57,50 @@ export default function UsersPage() {
         }
     }
 
+    async function handleBlock(id: number, username: string) {
+        if (!window.confirm(`Заблокировать пользователя ${username}?`)) return;
+        try {
+            setLoading(true);
+            const token = localStorage.getItem("accessToken");
+            const res = await fetch(`http://localhost:8181/users/${id}/block`, {
+                method: "PUT",
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (res.ok) {
+                setSuccess(`Пользователь ${username} заблокирован`);
+                setTimeout(() => setSuccess(null), 3000);
+                loadUsers();
+            } else {
+                setError("Ошибка при блокировке на сервере");
+                setTimeout(() => setError(null), 3000);
+            }
+        } catch {
+            setError("Ошибка связи с сервером");
+            setTimeout(() => setError(null), 3000);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     return (
         <div className="app-layout">
             <Navbar />
             <main className="app-main">
-                <div className="admin-header">
+                <div className="admin-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
                     <h2>Управление пользователями</h2>
-                    <button className="nav-tasks-btn" onClick={() => navigate("/tasks-admin")}>
-                        К списку заданий
-                    </button>
+                    <div style={{ display: "flex", gap: "10px" }}>
+                        <button
+                            type="button"
+                            className="nav-tasks-btn"
+                            style={{ background: "linear-gradient(90deg, #689ECA 0%, #8FDADB 100%)", color: "white", border: "none" }}
+                            onClick={() => navigate("/monitoring")}
+                        >
+                            🖥️ Журнал сессий
+                        </button>
+                        <button className="nav-tasks-btn" onClick={() => navigate("/tasks-admin")}>
+                            К списку заданий
+                        </button>
+                    </div>
                 </div>
 
                 <Alert type="error" message={error} />
@@ -114,9 +149,18 @@ export default function UsersPage() {
                                         </div>
                                     </td>
                                     <td>
-                                        <button className="btn-delete" onClick={() => handleDelete(u.id)}>
-                                            Удалить
-                                        </button>
+                                        <div style={{ display: "flex", gap: "8px", justifyContent: "center" }}>
+                                            <button
+                                                className="btn-delete"
+                                                style={{ backgroundColor: "#ffc9c9", color: "#fa5252" }}
+                                                onClick={() => handleBlock(u.id, u.username)}
+                                            >
+                                                Бан
+                                            </button>
+                                            <button className="btn-delete" onClick={() => handleDelete(u.id)}>
+                                                Удалить
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}

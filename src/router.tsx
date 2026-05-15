@@ -11,6 +11,7 @@ import UserPage from "./pages/UserPage";
 import TasksAdminPage from "./pages/TasksAdminPage";
 import TaskExecutionPage from "./pages/TaskExecutionPage";
 import AchievementsPage from "./pages/AchievementsPage.tsx";
+import SystemMonitoringPage from "./pages/SystemMonitoringPage";
 import AccessGuard from "./components/AccessGuard.tsx";
 
 export const router = createBrowserRouter([
@@ -90,6 +91,15 @@ export const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute
                         element={<TasksAdminPage />}
+                        allowedRoles={["ROLE_MODERATOR"]}
+                    />
+                ),
+            },
+            {
+                path: "monitoring",
+                element: (
+                    <ProtectedRoute
+                        element={<SystemMonitoringPage />}
                         allowedRoles={["ROLE_MODERATOR"]}
                     />
                 ),

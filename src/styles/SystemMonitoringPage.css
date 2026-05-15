@@ -1,0 +1,94 @@
+.monitoring-container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    width: 800px;
+    margin: 40px auto;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 30px;
+    padding: 30px;
+    box-sizing: border-box;
+    font-family: 'Nunito', sans-serif;
+    color: #6F7376;
+}
+
+.monitoring-title {
+    font-size: 32px;
+    font-weight: 700;
+    text-align: center;
+    margin: 0;
+}
+
+.sessions-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(104, 158, 202, 0.15);
+    padding: 20px;
+    border-radius: 20px;
+}
+
+.sessions-label {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.sessions-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #689ECA;
+}
+
+.errors-wrapper {
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 20px;
+    padding: 20px;
+}
+
+.errors-subtitle {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 15px 0;
+}
+
+.monitoring-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.monitoring-table th {
+    text-align: left;
+    padding: 12px;
+    font-weight: 700;
+    border-bottom: 2px solid rgba(111, 115, 118, 0.2);
+}
+
+.monitoring-table td {
+    padding: 12px;
+    border-bottom: 1px solid rgba(111, 115, 118, 0.1);
+}
+
+.log-user {
+    font-weight: 700;
+}
+
+.log-desc {
+    color: #FF8F8F;
+    font-size: 13px;
+}
+
+.block-btn {
+    background: #FF8F8F;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 15px;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: 'Nunito', sans-serif;
+}
+
+.block-btn:hover {
+    opacity: 0.9;
+}
