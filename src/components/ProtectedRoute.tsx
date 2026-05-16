@@ -1,5 +1,6 @@
 import { Navigate } from "react-router-dom";
-import type {JSX} from "react";
+import type { JSX } from "react";
+import { parseJwt } from "../utils/jwt";
 
 interface ProtectedRouteProps {
     element: JSX.Element;
@@ -10,11 +11,15 @@ export default function ProtectedRoute({ element, allowedRoles }: ProtectedRoute
     const token = localStorage.getItem("accessToken");
 
     if (!token) {
-        return <Navigate to="/" replace />; // если не авторизован → на логин
+        return <Navigate to="/" replace />;
     }
 
     try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
+        const payload = parseJwt(token);
+        if (!payload) {
+            return <Navigate to="/" replace />;
+        }
+
         const roles: string[] = payload.roles || payload.authorities || payload.scope || [];
 
         const hasAccess = roles.some((r) => allowedRoles.includes(r));

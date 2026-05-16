@@ -1,14 +1,14 @@
 import type { UserProfile } from "../types/user";
 
-/**
- * Декодирует JWT payload с поддержкой UTF-8 (кириллица и др. символы).
- */
-function parseJwt(token: string): any | null {
+export function parseJwt(token: string): any | null {
     try {
         const base64Url = token.split(".")[1];
         if (!base64Url) return null;
 
-        const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+        let base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+        const padLen = (4 - (base64.length % 4)) % 4;
+        base64 += "=".repeat(padLen);
+
         const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
         const jsonPayload = new TextDecoder("utf-8").decode(bytes);
 
@@ -19,9 +19,6 @@ function parseJwt(token: string): any | null {
     }
 }
 
-/**
- * Достаёт профиль пользователя из accessToken в localStorage.
- */
 export function getProfileFromToken(): UserProfile | null {
     const token = localStorage.getItem("accessToken");
     if (!token) return null;
@@ -32,9 +29,9 @@ export function getProfileFromToken(): UserProfile | null {
     return {
         id: payload.sub ? Number(payload.sub) : 0,
         username: payload.username ?? "",
-        email: payload.email ?? null,
+        email: payload.email ?? undefined,
         roles: payload.roles ?? [],
-        birthDate: payload.birthDate ?? null,
-        avatarUrl: payload.avatarUrl ?? null,
+        birthDate: payload.birthDate ?? undefined, // 👈 И здесь тоже
+        avatarUrl: payload.avatarUrl ?? undefined, // 👈 И здесь тоже
     };
 }

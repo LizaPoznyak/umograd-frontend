@@ -24,15 +24,27 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     async function refreshProfile() {
         setLoading(true);
         try {
-            // быстрый вариант из токена
-            const tokenProfile = getProfileFromToken();
-            if (tokenProfile) setProfile(tokenProfile);
+            const token = localStorage.getItem("accessToken");
+            if (!token) {
+                setProfile(null);
+                setLoading(false);
+                return;
+            }
 
-            // авторитетный вариант с бэка (с аватаром)
+            try {
+                const tokenProfile = getProfileFromToken();
+                if (tokenProfile) {
+                    setProfile(tokenProfile);
+                }
+            } catch (tokenErr) {
+                console.warn(tokenErr);
+            }
+
             const apiProfile = await fetchProfile();
             setProfile(apiProfile);
         } catch (e) {
             console.error("Не удалось загрузить профиль с сервера", e);
+            setProfile(null);
         } finally {
             setLoading(false);
         }

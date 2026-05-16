@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { login } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer.tsx";
@@ -6,7 +6,8 @@ import "../components/Layout.css";
 import "../styles/LoginPage.css";
 import Loader from "../components/Loader.tsx";
 import { useUser } from "../context/UserContext";
-import { fetchProfile } from "../api/user"; // ⚡️ подтягиваем профиль с бэка
+import { fetchProfile } from "../api/user";
+import { parseJwt } from "../utils/jwt";
 
 export default function LoginPage() {
     const [username, setUsername] = useState("");
@@ -15,6 +16,11 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false);
 
     const { setProfile } = useUser();
+
+    useEffect(() => {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+    }, []);
 
     async function handleLogin(e: React.FormEvent) {
         e.preventDefault();
@@ -29,17 +35,15 @@ export default function LoginPage() {
             if (userId) {
                 localStorage.setItem("childId", userId.toString());
             } else {
-                const payload = JSON.parse(atob(accessToken.split(".")[1]));
-                if (payload.sub) {
+                const payload = parseJwt(accessToken);
+                if (payload && payload.sub) {
                     localStorage.setItem("childId", payload.sub.toString());
                 }
             }
 
-            // ⚡️ сразу подтягиваем профиль с бэка (с аватаром)
             const apiProfile = await fetchProfile();
             setProfile(apiProfile);
 
-            // редирект по роли
             if (apiProfile.roles.includes("ROLE_MODERATOR")) {
                 navigate("/users");
             } else if (apiProfile.roles.includes("ROLE_PARENT")) {
@@ -82,7 +86,6 @@ export default function LoginPage() {
                             />
                         </div>
                         <div className="login-forgo-container">
-                            {/*<a href="#" className="login-forgot">Забыли пароль?</a>*/}
                         </div>
                         <div className="login-actions">
                             <button type="submit" className="login-button" disabled={loading}>
