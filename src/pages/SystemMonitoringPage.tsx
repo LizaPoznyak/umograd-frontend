@@ -8,6 +8,7 @@ type LogError = {
     userId: number;
     username: string;
     eventType: string;
+    endpoint: string;
     description: string;
     createdAt: string;
 };
@@ -123,6 +124,7 @@ export default function SystemMonitoringPage(): JSX.Element {
                                     <tr style={{ borderBottom: "2px solid rgba(111, 115, 118, 0.2)" }}>
                                         <th style={{ padding: "12px", textAlign: "left", fontSize: "15px", fontWeight: 700 }}>Дата</th>
                                         <th style={{ padding: "12px", textAlign: "left", fontSize: "15px", fontWeight: 700 }}>Пользователь</th>
+                                        <th style={{ padding: "12px", textAlign: "left", fontSize: "15px", fontWeight: 700 }}>Эндпоинт</th>
                                         <th style={{ padding: "12px", textAlign: "left", fontSize: "15px", fontWeight: 700 }}>Описание инцидента</th>
                                         <th style={{ padding: "12px", textAlign: "center", fontSize: "15px", fontWeight: 700 }}>Действие</th>
                                     </tr>
@@ -130,10 +132,13 @@ export default function SystemMonitoringPage(): JSX.Element {
                                     <tbody>
                                     {errorLogs.map((log) => (
                                         <tr key={log.id} style={{ borderBottom: "1px solid rgba(111, 115, 118, 0.1)" }}>
-                                            <td style={{ padding: "12px", fontSize: "13px" }}>
+                                            <td style={{ padding: "12px", fontSize: "13px", whiteSpace: "nowrap" }}>
                                                 {log.createdAt ? log.createdAt.replace("T", " ").substring(0, 16) : "—"}
                                             </td>
                                             <td style={{ padding: "12px", fontWeight: 700 }}>{log.username}</td>
+                                            <td style={{ padding: "12px", fontSize: "13px", fontFamily: "monospace", color: "#4A90E2" }}>
+                                                {log.endpoint || "—"}
+                                            </td>
                                             <td style={{ padding: "12px", color: "#fa5252", fontSize: "13px", lineHeight: "1.4" }}>
                                                 ⚠️ {log.description}
                                             </td>
@@ -150,10 +155,11 @@ export default function SystemMonitoringPage(): JSX.Element {
                                                         fontWeight: 700,
                                                         cursor: "pointer",
                                                         fontSize: "12px",
-                                                        fontFamily: "Nunito, sans-serif"
+                                                        fontFamily: "Nunito, sans-serif",
+                                                        whiteSpace: "nowrap"
                                                     }}
                                                 >
-                                                    {blockingId === log.userId ? "Бан..." : "Блокировать пользователя"}
+                                                    Блокировать
                                                 </button>
                                             </td>
                                         </tr>
