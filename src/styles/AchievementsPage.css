@@ -1,133 +1,220 @@
-.achievements-center {
+.achv-page-main {
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    margin: 40px auto;
-}
-
-.achievements-container {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    width: 368px;
-    background: rgba(255, 255, 255, 0.4);
-    border-radius: 20px;
-    padding: 15px;
-}
-
-/* Tabs */
-.achievements-tabs {
-    display: flex;
-    gap: 20px;
-}
-.tab {
-    font-weight: 600;
-    font-size: 14px;
-    color: #98A0A4;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    padding-bottom: 3px;
-}
-.tab.active {
-    color: #837374;
-    border-color: #837374;
-}
-
-/* Sort + filters */
-.achievements-sort-block {
-    background: rgba(255,255,255,0.6);
-    border-radius: 20px;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-.sort-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.sort-title {
-    font-weight: 600;
-    font-size: 14px;
-    color: #837374;
-}
-.sort-reset {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-weight: 600;
-    font-size: 14px;
-    color: #837374;
-    cursor: pointer;
-}
-.sort-reset .close {
-    font-size: 18px;
-}
-
-/* Filters */
-.achievements-filters {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-}
-.filter {
-    padding: 10px;
-    border-radius: 27px;
-    background: rgba(255,255,255,0.8);
-    font-size: 14px;
-    font-weight: 600;
-    color: #837374;
-    cursor: pointer;
-}
-.filter.active {
-    background: #FFCDDE;
-}
-
-/* Grid */
-.achievements-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-    background: rgba(255,255,255,0.8);
-    border-radius: 20px;
-    padding: 20px;
-}
-
-/* Карточка фиксированного размера */
-.achievement-card {
-    width: 100px;       /* одинаковая ширина */
-    height: 150px;      /* одинаковая высота */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-
-    background: rgba(255,255,255,0.6);
-    border-radius: 12px;
-    padding: 10px;
+    padding: 40px 20px;
     box-sizing: border-box;
 }
 
-/* Картинка фиксированного размера */
-.achievement-img {
-    width: 64px;
-    height: 64px;
-    object-fit: contain;   /* картинка вписывается без обрезки */
+.achv-main-container {
+    display: flex;
+    gap: 30px;
+    width: 100%;
+    max-width: 1200px;
+    align-items: flex-start;
 }
 
-/* Название */
-.achievement-title {
+.achv-sidebar-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 260px;
+    flex-shrink: 0;
+}
+
+.achv-nav-tabs {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border-radius: 20px;
+    padding: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.achv-tab-item {
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: #6F7376;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.achv-tab-item.active {
+    background: linear-gradient(90deg, #689ECA 0%, #8FDADB 100%);
+    color: white;
+}
+
+.achv-filter-box {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.achv-filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.achv-filter-title {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: #495057;
+}
+
+.achv-filter-reset {
     font-size: 12px;
-    font-weight: 600;
-    color: #545d61;
-    text-align: center;
-    margin: 4px 0;
-    line-height: 1.2;
+    color: #fa5252;
+    font-weight: 700;
+    cursor: pointer;
 }
 
-/* Звёзды */
-.achievement-stars {
-    font-size: 14px;
-    color: #FFD700;
+.achv-filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.achv-filter-btn {
+    padding: 10px;
+    background: #f8f9fa;
+    border: 1px solid rgba(0,0,0,0.03);
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.achv-filter-btn.active {
+    background: #e9ecef;
+    border-color: #689ECA;
+}
+
+.achv-content-area {
+    flex-grow: 1;
+}
+
+.achv-status-text {
+    text-align: center;
+    padding: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    color: #6F7376;
+    background: rgba(255,255,255,0.7);
+    border-radius: 20px;
+}
+
+.achv-grid-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+    width: 100%;
+}
+
+.achv-card-item {
+    background: white;
+    border-radius: 24px;
+    padding: 24px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 310px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0,0,0,0.02);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.achv-card-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+}
+
+.achv-card-item.is-locked {
+    background: rgba(255, 255, 255, 0.75);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.02);
+}
+
+.achv-card-top {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.achv-card-img {
+    width: 95px;
+    height: 95px;
+    object-fit: contain;
+    transition: transform 0.2s ease;
+}
+
+.achv-card-item:hover .achv-card-img {
+    transform: scale(1.05);
+}
+
+.achv-card-middle {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+    flex-grow: 1;
+    width: 100%;
+    justify-content: flex-start;
+}
+
+.achv-card-title {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    color: #2d3748;
+}
+
+.achv-card-desc {
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    color: #718096;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.achv-card-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    margin-top: auto;
+}
+
+.achv-card-stars {
+    font-size: 20px;
+    letter-spacing: 4px;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(236, 201, 75, 0.2));
+}
+
+.achv-lock-badge {
+    font-family: 'Nunito', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: #a0aec0;
+    background: #edf2f7;
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(0,0,0,0.02);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
 }

@@ -10,48 +10,72 @@ import Achv4 from "../assets/achv4.png";
 import Achv5 from "../assets/achv5.png";
 import Achv6 from "../assets/achv6.png";
 
-type AchievementData = {
-    image: string;
-    title: string;
-    stars: number;
+type BackendAchievement = {
+    id: number;
+    name: string;
+    description: string;
+    iconUrl?: string;
+    conditionValue: number;
 };
 
-const achievementDataMap: Record<number, AchievementData> = {
-    1: { image: Achv1, title: "Снайпер", stars: 3 },
-    2: { image: Achv2, title: "Алмазный ум", stars: 2 },
-    3: { image: Achv3, title: "Король викторин", stars: 3 },
-    4: { image: Achv4, title: "Учёный исследователь", stars: 2 },
-    5: { image: Achv5, title: "Золотая медаль", stars: 1 },
-    6: { image: Achv6, title: "Любимец команды", stars: 3 },
+const fallbackImages: Record<number, string> = {
+    1: Achv1,
+    2: Achv2,
+    3: Achv3,
+    4: Achv4,
+    5: Achv5,
+    6: Achv6,
 };
 
 export default function AchievementsPage() {
     const [activeTab, setActiveTab] = useState<"received" | "all">("received");
     const [selectedFilter, setSelectedFilter] = useState<number | null>(null);
+    const [allAchievements, setAllAchievements] = useState<BackendAchievement[]>([]);
     const [earnedIds, setEarnedIds] = useState<number[]>([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchEarned = async () => {
+        const loadAchievementsData = async () => {
             const childId = localStorage.getItem("childId");
             const token = localStorage.getItem("accessToken");
             try {
-                const res = await fetch(`http://localhost:8182/api/v1/analytics/achievements/child/${childId}`, {
+                setLoading(true);
+
+                const earnedRes = await fetch(`http://localhost:8182/api/v1/analytics/achievements/child/${childId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                if (res.ok) {
-                    const data = await res.json();
-                    setEarnedIds(data);
+                if (earnedRes.ok) {
+                    setEarnedIds(await earnedRes.json());
+                }
+
+                const allRes = await fetch(`http://localhost:8182/api/v1/analytics/achievements`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                if (allRes.ok) {
+                    setAllAchievements(await allRes.json());
                 }
             } catch (err) {
                 console.error(err);
+            } finally {
+                setLoading(false);
             }
         };
-        fetchEarned();
+        loadAchievementsData();
     }, []);
 
-    const displayAchievements = Object.entries(achievementDataMap)
-        .map(([id, data]) => ({ id: Number(id), ...data }))
-        .filter(a => {
+    const displayAchievements = allAchievements
+        .map((a) => {
+            const starsCount = a.conditionValue > 5 ? 3 : a.conditionValue > 2 ? 2 : 1;
+            const localImage = fallbackImages[a.id] || Achv1;
+            return {
+                id: a.id,
+                title: a.name,
+                description: a.description,
+                image: a.iconUrl || localImage,
+                stars: starsCount
+            };
+        })
+        .filter((a) => {
             const matchesTab = activeTab === "all" || earnedIds.includes(a.id);
             const matchesFilter = !selectedFilter || a.stars === selectedFilter;
             return matchesTab && matchesFilter;
@@ -60,71 +84,88 @@ export default function AchievementsPage() {
     return (
         <div className="app-layout">
             <Navbar />
-            <main className="app-main achievements-center">
-                <div className="achievements-container">
-                    <div className="achievements-tabs">
-                        <div
-                            className={`tab ${activeTab === "received" ? "active" : ""}`}
-                            onClick={() => setActiveTab("received")}
-                        >
-                            Полученные
+            <main className="app-main achv-page-main">
+                <div className="achv-main-container">
+
+                    <div className="achv-sidebar-panel">
+                        <div className="achv-nav-tabs">
+                            <div
+                                className={`achv-tab-item ${activeTab === "received" ? "active" : ""}`}
+                                onClick={() => setActiveTab("received")}
+                            >
+                                Полученные
+                            </div>
+                            <div
+                                className={`achv-tab-item ${activeTab === "all" ? "active" : ""}`}
+                                onClick={() => setActiveTab("all")}
+                            >
+                                Все
+                            </div>
                         </div>
-                        <div
-                            className={`tab ${activeTab === "all" ? "active" : ""}`}
-                            onClick={() => setActiveTab("all")}
-                        >
-                            Все
+
+                        <div className="achv-filter-box">
+                            <div className="achv-filter-header">
+                                <span className="achv-filter-title">Фильтрация</span>
+                                {selectedFilter && (
+                                    <div className="achv-filter-reset" onClick={() => setSelectedFilter(null)}>
+                                        <span>Убрать ×</span>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="achv-filter-options">
+                                {[1, 2, 3].map(num => (
+                                    <div
+                                        key={num}
+                                        className={`achv-filter-btn ${selectedFilter === num ? "active" : ""}`}
+                                        onClick={() => setSelectedFilter(num)}
+                                    >
+                                        {"⭐".repeat(num)}
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
 
-                    <div className="achievements-sort-block">
-                        <div className="sort-header">
-                            <span className="sort-title">Фильтрация</span>
-                            {selectedFilter && (
-                                <div
-                                    className="sort-reset"
-                                    onClick={() => setSelectedFilter(null)}
-                                >
-                                    <span>Убрать</span>
-                                    <span className="close">×</span>
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="achievements-filters">
-                            {[1, 2, 3].map(num => (
-                                <div
-                                    key={num}
-                                    className={`filter ${selectedFilter === num ? "active" : ""}`}
-                                    onClick={() => setSelectedFilter(num)}
-                                >
-                                    {"⭐".repeat(num)}
-                                </div>
-                            ))}
-                        </div>
+                    <div className="achv-content-area">
+                        {loading ? (
+                            <div className="achv-status-text">Загрузка наград...</div>
+                        ) : displayAchievements.length === 0 ? (
+                            <div className="achv-status-text">Достижений в этой категории пока нет</div>
+                        ) : (
+                            <div className="achv-grid-layout">
+                                {displayAchievements.map((a) => {
+                                    const isEarned = earnedIds.includes(a.id);
+                                    return (
+                                        <div key={a.id} className={`achv-card-item ${!isEarned ? "is-locked" : ""}`}>
+                                            <div className="achv-card-top">
+                                                <img
+                                                    src={a.image}
+                                                    alt={a.title}
+                                                    className="achv-card-img"
+                                                    style={{ filter: isEarned ? "none" : "drop-shadow(0px 4px 10px rgba(0,0,0,0.15)) grayscale(100%) opacity(0.25)" }}
+                                                />
+                                            </div>
+                                            <div className="achv-card-middle">
+                                                <div className="achv-card-title">{a.title}</div>
+                                                <div className="achv-card-desc" title={a.description}>
+                                                    {a.description || "Описание отсутствует"}
+                                                </div>
+                                            </div>
+                                            <div className="achv-card-bottom">
+                                                <div className="achv-card-stars">{"⭐".repeat(a.stars)}</div>
+                                                {!isEarned && <div className="achv-lock-badge">🔒 Заблокировано</div>}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
                     </div>
 
-                    <div className="achievements-grid">
-                        {displayAchievements.map((a) => {
-                            const isEarned = earnedIds.includes(a.id);
-                            return (
-                                <div key={a.id} className={`achievement-card ${!isEarned ? "locked" : ""}`}>
-                                    <img
-                                        src={a.image}
-                                        alt={a.title}
-                                        className="achievement-img"
-                                        style={{ filter: isEarned ? "none" : "grayscale(100%) opacity(0.4)" }}
-                                    />
-                                    <div className="achievement-title">{a.title}</div>
-                                    <div className="achievement-stars">{"⭐".repeat(a.stars)}</div>
-                                    {!isEarned && <div className="lock-tag">🔒 Заблокировано</div>}
-                                </div>
-                            );
-                        })}
-                    </div>
                 </div>
             </main>
-            <Footer/>
+            <Footer />
         </div>
     );
 }
