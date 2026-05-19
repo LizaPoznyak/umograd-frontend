@@ -97,9 +97,6 @@ export default function UsersPage() {
                         >
                             🖥️ Журнал сессий
                         </button>
-                        <button className="nav-tasks-btn" onClick={() => navigate("/tasks-admin")}>
-                            К списку заданий
-                        </button>
                     </div>
                 </div>
 

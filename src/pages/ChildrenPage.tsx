@@ -10,8 +10,16 @@ import AggregateProgressChart from "../components/AggregateProgressChart.tsx";
 import "../components/Layout.css";
 import "../styles/ChildrenPage.css";
 
+type PlatformTask = {
+    id: number;
+    title: string;
+};
+
 export default function ChildrenPage() {
     const [children, setChildren] = useState<ChildResponse[]>([]);
+    const [allTasks, setAllTasks] = useState<PlatformTask[]>([]);
+    const [childRecs, setChildRecs] = useState<Record<number, number[]>>({});
+    const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -27,16 +35,34 @@ export default function ChildrenPage() {
     const [isAggregate, setIsAggregate] = useState(false);
 
     useEffect(() => {
-        loadChildren();
+        loadData();
     }, []);
 
-    async function loadChildren() {
+    async function loadData() {
         try {
             setLoading(true);
             const data = await getChildren();
             setChildren(data);
+
+            const token = localStorage.getItem("accessToken");
+            const tasksRes = await fetch("http://localhost:8181/tasks", {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (tasksRes.ok) {
+                setAllTasks(await tasksRes.json());
+            }
+
+            for (const child of data) {
+                const recsRes = await fetch (`http://localhost:8182/api/v1/analytics/active-recs/${child.id}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                if (recsRes.ok) {
+                    const taskIds = await recsRes.json();
+                    setChildRecs(prev => ({ ...prev, [child.id]: taskIds }));
+                }
+            }
         } catch {
-            setError("Не удалось загрузить список детей");
+            setError("Не удалось загрузить данные");
             setTimeout(() => setError(null), 3000);
         } finally {
             setLoading(false);
@@ -53,7 +79,7 @@ export default function ChildrenPage() {
             setPassword("");
             setSuccess("Ребёнок успешно добавлен");
             setTimeout(() => setSuccess(null), 3000);
-            loadChildren();
+            loadData();
         } catch {
             setError("Ошибка при добавлении ребёнка");
             setTimeout(() => setError(null), 3000);
@@ -69,7 +95,7 @@ export default function ChildrenPage() {
             await deleteChild(id);
             setSuccess("Ребёнок удалён");
             setTimeout(() => setSuccess(null), 3000);
-            loadChildren();
+            loadData();
         } catch {
             setError("Ошибка при удалении ребёнка");
             setTimeout(() => setError(null), 3000);
@@ -132,6 +158,58 @@ export default function ChildrenPage() {
         }
     };
 
+    const handleSaveRecommendations = async (childId: number, taskIds: number[]) => {
+        try {
+            const token = localStorage.getItem("accessToken");
+            const res = await fetch(`http://localhost:8182/api/v1/analytics/recommend-multiple?childId=${childId}`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(taskIds)
+            });
+            if (res.ok) {
+                setChildRecs(prev => ({ ...prev, [childId]: taskIds }));
+                setSuccess("Рекомендации обновлены");
+                setTimeout(() => setSuccess(null), 2000);
+            }
+        } catch {
+            setError("Не удалось сохранить изменения");
+            setTimeout(() => setError(null), 2000);
+        }
+    };
+
+    const handleToggleCheckbox = (childId: number, taskId: number) => {
+        const currentSelected = childRecs[childId] || [];
+        let updated: number[];
+        if (currentSelected.includes(taskId)) {
+            updated = currentSelected.filter(id => id !== taskId);
+        } else {
+            updated = [...currentSelected, taskId];
+        }
+        handleSaveRecommendations(childId, updated);
+    };
+
+    const handleToggleConsent = async (childId: number, currentConsent: boolean) => {
+        try {
+            const token = localStorage.getItem("accessToken");
+            const nextConsent = !currentConsent;
+            const res = await fetch(`http://localhost:8080/api/v1/parent/children/${childId}/consent?consent=${nextConsent}`, {
+                method: "PUT",
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (res.ok) {
+                setChildren(prev => prev.map(c => c.id === childId ? { ...c, parentConsent: nextConsent, parent_consent: nextConsent } as any : c));
+                setSuccess("Статус доступа изменен");
+                setTimeout(() => setSuccess(null), 2000);
+            }
+        } catch {
+            setError("Не удалось изменить статус доступа");
+            setTimeout(() => setError(null), 2000);
+        }
+    };
+
     const handlePeriodChange = (newPeriod: "day" | "week" | "month") => {
         setPeriod(newPeriod);
         setChartData([]);
@@ -142,17 +220,17 @@ export default function ChildrenPage() {
 
     return (
         <div className="app-layout">
-            <Navbar/>
+            <Navbar />
             <main className="app-main">
                 <div className="children-page-container">
                     <h2 className="children-page-title">Мои дети</h2>
 
                     {children.length > 1 && (
-                        <div style={{ display: "flex", justifyContent: "center", marginBottom: "10px" }}>
+                        <div style={{ display: "flex", justifyContent: "center", marginBottom: "25px" }}>
                             <button
                                 type="button"
                                 className="child-stats-btn"
-                                style={{ padding: "10px 20px", borderRadius: "30px", fontSize: "14px" }}
+                                style={{ padding: "12px 24px", borderRadius: "30px", fontSize: "14px" }}
                                 onClick={openAggregateStatistics}
                             >
                                 📊 Общая статистика по всем детям
@@ -160,9 +238,9 @@ export default function ChildrenPage() {
                         </div>
                     )}
 
-                    {loading && <Loader/>}
-                    <Alert type="error" message={error}/>
-                    <Alert type="success" message={success}/>
+                    {loading && <Loader />}
+                    <Alert type="error" message={error} />
+                    <Alert type="success" message={success} />
 
                     <form onSubmit={handleAdd} className="children-add-form">
                         <input
@@ -200,31 +278,137 @@ export default function ChildrenPage() {
                                     <th>ID</th>
                                     <th>Логин</th>
                                     <th>Email</th>
+                                    <th>Доступ к заданиям</th>
+                                    <th>Рекомендации</th>
                                     <th>Действия</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {children.map((c) => (
-                                    <tr key={c.id}>
-                                        <td>{c.id}</td>
-                                        <td className="child-username">{c.username}</td>
-                                        <td>{c.email}</td>
-                                        <td className="child-table-actions">
-                                            <button
-                                                className="child-stats-btn"
-                                                onClick={() => openStatistics(c.id, period)}
-                                            >
-                                                Статистика
-                                            </button>
-                                            <button
-                                                className="child-delete-btn"
-                                                onClick={() => handleDelete(c.id)}
-                                            >
-                                                Удалить
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
+                                {children.map((c) => {
+                                    const isConsentActive = !!((c as any).parentConsent || (c as any).parent_consent);
+                                    return (
+                                        <tr key={c.id}>
+                                            <td>{c.id}</td>
+                                            <td className="child-username">{c.username}</td>
+                                            <td>{c.email}</td>
+                                            <td>
+                                                <div style={{ display: "flex", alignItems: "center", height: "100%" }}>
+                                                    <label style={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        gap: "8px",
+                                                        cursor: "pointer",
+                                                        fontFamily: "Nunito",
+                                                        fontSize: "13px",
+                                                        fontWeight: 700,
+                                                        color: isConsentActive ? "#7FCA68" : "#A0AEC0",
+                                                        background: "white",
+                                                        padding: "6px 12px",
+                                                        borderRadius: "10px",
+                                                        border: "1px solid rgba(111,115,118,0.15)",
+                                                        whiteSpace: "nowrap"
+                                                    }}>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={isConsentActive}
+                                                            onChange={() => handleToggleConsent(c.id, isConsentActive)}
+                                                            style={{ cursor: "pointer", width: "16px", height: "16px", accentColor: "#7FCA68" }}
+                                                        />
+                                                        <span>{isConsentActive ? "Разрешен" : "Заблокирован"}</span>
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div style={{ position: "relative", display: "inline-block", width: "100%", maxWidth: "160px" }}>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setOpenDropdownId(openDropdownId === c.id ? null : c.id)}
+                                                        className="children-input"
+                                                        style={{
+                                                            width: "100%",
+                                                            padding: "6px 12px",
+                                                            borderRadius: "10px",
+                                                            border: "1px solid #689ECA",
+                                                            background: "white",
+                                                            color: "#6F7376",
+                                                            textAlign: "left",
+                                                            cursor: "pointer",
+                                                            display: "flex",
+                                                            justifyContent: "space-between",
+                                                            alignItems: "center",
+                                                            fontFamily: "Nunito"
+                                                        }}
+                                                    >
+                                                        <span>Выбрано: {(childRecs[c.id] || []).length}</span>
+                                                        <span>▼</span>
+                                                    </button>
+
+                                                    {openDropdownId === c.id && (
+                                                        <div style={{
+                                                            position: "absolute",
+                                                            top: "100%",
+                                                            left: 0,
+                                                            width: "220px",
+                                                            background: "white",
+                                                            border: "1px solid #689ECA",
+                                                            borderRadius: "12px",
+                                                            boxShadow: "0 10px 25px rgba(0,0,0,0.08)",
+                                                            zIndex: 100,
+                                                            maxHeight: "180px",
+                                                            overflowY: "auto",
+                                                            padding: "10px",
+                                                            boxSizing: "border-box",
+                                                            marginTop: "4px"
+                                                        }}>
+                                                            {allTasks.map((task) => {
+                                                                const isChecked = (childRecs[c.id] || []).includes(task.id);
+                                                                return (
+                                                                    <label
+                                                                        key={task.id}
+                                                                        style={{
+                                                                            display: "flex",
+                                                                            alignItems: "center",
+                                                                            gap: "8px",
+                                                                            padding: "6px 4px",
+                                                                            fontFamily: "Nunito",
+                                                                            fontSize: "13px",
+                                                                            color: "#4A5568",
+                                                                            cursor: "pointer"
+                                                                        }}
+                                                                    >
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            checked={isChecked}
+                                                                            onChange={() => handleToggleCheckbox(c.id, task.id)}
+                                                                            style={{ cursor: "pointer", width: "14px", height: "14px" }}
+                                                                        />
+                                                                        <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                                                                {task.title}
+                                                                            </span>
+                                                                    </label>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td className="child-table-actions">
+                                                <button
+                                                    className="child-stats-btn"
+                                                    onClick={() => openStatistics(c.id, period)}
+                                                >
+                                                    Статистика
+                                                </button>
+                                                <button
+                                                    className="child-delete-btn"
+                                                    onClick={() => handleDelete(c.id)}
+                                                >
+                                                    Удалить
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                                 </tbody>
                             </table>
                         </div>

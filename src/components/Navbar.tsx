@@ -52,7 +52,7 @@ export default function Navbar() {
     }
 
     const usernameFirstLetter = profile.username?.[0]?.toUpperCase() ?? "?";
-
+    const role = localStorage.getItem("role");
     return (
         <header className="navbar">
             <div className="navigation">
@@ -64,7 +64,9 @@ export default function Navbar() {
 
                 <nav className="navbar-center">
                     <NavLink to={homePath} className="nav-item">Главная</NavLink>
-                    <NavLink to="/tasks" className="nav-item">Задания</NavLink>
+                    {role !== "MODERATOR" && (
+                        <NavLink to="/tasks-admin" className="nav-item">Задания</NavLink>
+                    )}
                     <NavLink to="/achievements" className="nav-item">Достижения</NavLink>
                 </nav>
             </div>

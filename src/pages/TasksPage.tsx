@@ -23,6 +23,7 @@ export default function TasksPage() {
     const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<"recommend" | "all">("all");
     const [recommendedDifficulty, setRecommendedDifficulty] = useState<string | null>(null);
+    const [parentTaskIds, setParentTaskIds] = useState<number[]>([]);
     const [recommendationMessage, setRecommendationMessage] = useState<string>("");
 
     const navigate = useNavigate();
@@ -50,6 +51,7 @@ export default function TasksPage() {
                         const adaptiveData = await adaptiveRes.json();
                         setRecommendedDifficulty(adaptiveData.recommendedDifficulty);
                         setRecommendationMessage(adaptiveData.message);
+                        setParentTaskIds(adaptiveData.parentTaskIds || []);
                         setActiveTab("recommend");
                     }
                 }
@@ -97,13 +99,15 @@ export default function TasksPage() {
         }
     };
 
-    const baseFilteredTasks = activeTab === "recommend" && recommendedDifficulty
-        ? tasks.filter((t) => t.difficulty === recommendedDifficulty)
+    const filteredByTab = activeTab === "recommend"
+        ? (parentTaskIds && parentTaskIds.length > 0
+            ? tasks.filter((t) => parentTaskIds.includes(t.id || 0))
+            : tasks.filter((t) => t.difficulty === recommendedDifficulty))
         : tasks;
 
     const finalFilteredTasks = selectedDifficulty
-        ? baseFilteredTasks.filter((t) => t.difficulty === selectedDifficulty)
-        : baseFilteredTasks;
+        ? filteredByTab.filter((t) => t.difficulty === selectedDifficulty)
+        : filteredByTab;
 
     return (
         <div className="app-layout">
@@ -187,14 +191,26 @@ export default function TasksPage() {
                             </div>
                         ) : (
                             finalFilteredTasks.map((task) => {
-                                const isRec = recommendedDifficulty === task.difficulty;
+                                const isParentAssigned = parentTaskIds && parentTaskIds.includes(task.id || 0);
+                                const isAiRecommended = (!parentTaskIds || parentTaskIds.length === 0) && recommendedDifficulty === task.difficulty;
+                                const isRec = isParentAssigned || isAiRecommended;
+
                                 return (
                                     <div
                                         key={task.id ?? task.sourceId}
                                         className={`tasks-item ${isRec ? "is-recommended-card" : ""}`}
+                                        style={{
+                                            border: isParentAssigned ? "2px solid #689ECA" : undefined,
+                                            background: isParentAssigned ? "rgba(104, 158, 202, 0.02)" : undefined
+                                        }}
                                     >
                                         {isRec && (
-                                            <span className="task-recommend-badge">Рекомендовано</span>
+                                            <span
+                                                className="task-recommend-badge"
+                                                style={{ backgroundColor: isParentAssigned ? "#689ECA" : undefined }}
+                                            >
+                                                {isParentAssigned ? "От родителя" : "Рекомендовано"}
+                                            </span>
                                         )}
                                         <img src={Image} alt="Картинка задания" className="tasks-img"/>
                                         <div className="tasks-info-btn">

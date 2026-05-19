@@ -1,12 +1,15 @@
 import { useEffect } from "react";
 import { RouterProvider } from "react-router-dom";
-import {router} from "./router.tsx";
+import { router } from "./router";
 
-function App() {
+export default function App() {
     useEffect(() => {
         const sendHeartbeat = async () => {
             const token = localStorage.getItem("accessToken");
+            const role = localStorage.getItem("role");
+
             if (!token) return;
+            if (role !== "MODERATOR" && role !== "ROLE_MODERATOR") return;
 
             try {
                 await fetch("http://localhost:8182/api/v1/analytics/logs/monitoring/heartbeat", {
@@ -16,12 +19,11 @@ function App() {
                     }
                 });
             } catch (err) {
-                console.error("Критическая ошибка отправки пульса сессии:", err);
+                console.error("Критическая ошибка отправки пульса сессии модератора:", err);
             }
         };
 
         sendHeartbeat();
-
         const interval = setInterval(sendHeartbeat, 5000);
 
         return () => clearInterval(interval);
@@ -29,5 +31,3 @@ function App() {
 
     return <RouterProvider router={router} />;
 }
-
-export default App
