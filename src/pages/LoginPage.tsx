@@ -53,9 +53,15 @@ export default function LoginPage() {
             } else {
                 navigate("/");
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
-            alert("Ошибка входа");
+            if (err?.response?.data?.error) {
+                alert(err.response.data.error);
+            } else if (err?.message) {
+                alert(err.message);
+            } else {
+                alert("Ошибка входа");
+            }
         } finally {
             setLoading(false);
         }

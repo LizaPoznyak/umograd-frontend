@@ -19,6 +19,9 @@ export default function ChildrenPage() {
     const [children, setChildren] = useState<ChildResponse[]>([]);
     const [allTasks, setAllTasks] = useState<PlatformTask[]>([]);
     const [childRecs, setChildRecs] = useState<Record<number, number[]>>({});
+    const [customLimits, setCustomLimits] = useState<Record<number, number>>({});
+    const [ageLimits, setAgeLimits] = useState<Record<number, number>>({});
+    const [parentDiffs, setParentDiffs] = useState<Record<number, string>>({});
     const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
@@ -52,6 +55,30 @@ export default function ChildrenPage() {
                 setAllTasks(await tasksRes.json());
             }
 
+            const customRes = await fetch("http://localhost:8182/api/v1/analytics/limit/parent/custom-limits", {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (customRes.ok) {
+                const limitsData = await customRes.json();
+                const limitsMap: Record<number, number> = {};
+                limitsData.forEach((l: any) => {
+                    limitsMap[l.childId] = l.customMinutes;
+                });
+                setCustomLimits(limitsMap);
+            }
+
+            const ageRes = await fetch("http://localhost:8080/api/v1/analytics/limit/parent/limits", {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (ageRes.ok) {
+                const ageData = await ageRes.json();
+                const ageMap: Record<number, number> = {};
+                ageData.forEach((l: any) => {
+                    ageMap[l.age] = l.maxMinutes;
+                });
+                setAgeLimits(ageMap);
+            }
+
             for (const child of data) {
                 const recsRes = await fetch (`http://localhost:8182/api/v1/analytics/active-recs/${child.id}`, {
                     headers: { Authorization: `Bearer ${token}` }
@@ -59,6 +86,14 @@ export default function ChildrenPage() {
                 if (recsRes.ok) {
                     const taskIds = await recsRes.json();
                     setChildRecs(prev => ({ ...prev, [child.id]: taskIds }));
+                }
+
+                const dRes = await fetch(`http://localhost:8182/api/v1/analytics/parent/selected-difficulty/${child.id}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                if (dRes.ok) {
+                    const dText = await dRes.text();
+                    setParentDiffs(prev => ({ ...prev, [child.id]: dText }));
                 }
             }
         } catch {
@@ -210,6 +245,61 @@ export default function ChildrenPage() {
         }
     };
 
+    const handleSaveCustomLimit = async (childId: number, minutes: number) => {
+        if (minutes < 0) return;
+        try {
+            const token = localStorage.getItem("accessToken");
+            const res = await fetch(`http://localhost:8182/api/v1/analytics/limit/parent/custom-limits?childId=${childId}&minutes=${minutes}`, {
+                method: "POST",
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (res.ok) {
+                setSuccess("Лимит времени обновлен");
+                setTimeout(() => setSuccess(null), 2000);
+            }
+        } catch {
+            setError("Не удалось сохранить лимит");
+            setTimeout(() => setError(null), 2000);
+        }
+    };
+
+    const handleSaveAgeLimit = async (age: number, minutes: number) => {
+        if (minutes < 0) return;
+        try {
+            const token = localStorage.getItem("accessToken");
+            const res = await fetch(`http://localhost:8182/api/v1/analytics/limit/parent/limits?age=${age}&maxMinutes=${minutes}`, {
+                method: "POST",
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (res.ok) {
+                setSuccess(`Лимит для возраста ${age} лет сохранен`);
+                setTimeout(() => setSuccess(null), 2000);
+            }
+        } catch {
+            setError("Не удалось сохранить лимит");
+            setTimeout(() => setError(null), 2000);
+        }
+    };
+
+    const handleSaveSelectedDifficulty = async (childId: number, difficulty: string) => {
+        try {
+            const token = localStorage.getItem("accessToken");
+            const res = await fetch(`http://localhost:8182/api/v1/analytics/parent/selected-difficulty?childId=${childId}&difficulty=${difficulty}`, {
+                method: "POST",
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (res.ok) {
+                setParentDiffs(prev => ({ ...prev, [childId]: difficulty }));
+                setSuccess("Сложность траектории обновлена");
+                setTimeout(() => setSuccess(null), 2000);
+                loadData();
+            }
+        } catch {
+            setError("Не удалось сохранить сложность");
+            setTimeout(() => setError(null), 2000);
+        }
+    };
+
     const handlePeriodChange = (newPeriod: "day" | "week" | "month") => {
         setPeriod(newPeriod);
         setChartData([]);
@@ -217,6 +307,8 @@ export default function ChildrenPage() {
             openStatistics(activeChildId, newPeriod);
         }
     };
+
+    const ageGroups = [5, 8, 10, 12, 14, 16, 18];
 
     return (
         <div className="app-layout">
@@ -271,14 +363,16 @@ export default function ChildrenPage() {
                     </form>
 
                     {!loading && !error && (
-                        <div className="children-list-wrapper">
-                            <table className="children-table">
+                        <div className="children-list-wrapper" style={{ overflow: "visible" }}>
+                            <table className="children-table" style={{ overflow: "visible" }}>
                                 <thead>
                                 <tr>
                                     <th>ID</th>
                                     <th>Логин</th>
                                     <th>Email</th>
-                                    <th>Доступ к заданиям</th>
+                                    <th>Доступ к тестам</th>
+                                    <th>Лимит времени</th>
+                                    <th>Сложность траектории</th>
                                     <th>Рекомендации</th>
                                     <th>Действия</th>
                                 </tr>
@@ -286,6 +380,7 @@ export default function ChildrenPage() {
                                 <tbody>
                                 {children.map((c) => {
                                     const isConsentActive = !!((c as any).parentConsent || (c as any).parent_consent);
+                                    const currentMinutes = customLimits[c.id] || "";
                                     return (
                                         <tr key={c.id}>
                                             <td>{c.id}</td>
@@ -317,6 +412,54 @@ export default function ChildrenPage() {
                                                         <span>{isConsentActive ? "Разрешен" : "Заблокирован"}</span>
                                                     </label>
                                                 </div>
+                                            </td>
+                                            <td>
+                                                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                                                    <input
+                                                        type="number"
+                                                        value={currentMinutes}
+                                                        placeholder="Мин"
+                                                        min={0}
+                                                        onChange={(e) => {
+                                                            const val = e.target.value === "" ? 0 : Math.max(0, Number(e.target.value));
+                                                            setCustomLimits(prev => ({ ...prev, [c.id]: val }));
+                                                        }}
+                                                        className="children-input"
+                                                        style={{ width: "105px", padding: "6px 8px", margin: 0, height: "34px", textAlign: "center", borderRadius: "12px", border: "1px solid rgba(104, 158, 202, 0.4)", fontFamily: "Nunito", fontSize: "13px", boxSizing: "border-box" }}
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleSaveCustomLimit(c.id, customLimits[c.id] || 0)}
+                                                        style={{ padding: "0 10px", borderRadius: "12px", height: "34px", fontSize: "14px", background: "#689ECA", color: "white", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, boxSizing: "border-box" }}
+                                                    >
+                                                        ✓
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td style={{ paddingLeft: "25px" }}>
+                                                <select
+                                                    value={parentDiffs[c.id] || "NONE"}
+                                                    onChange={(e) => handleSaveSelectedDifficulty(c.id, e.target.value)}
+                                                    className="children-input"
+                                                    style={{
+                                                        padding: "6px 12px",
+                                                        borderRadius: "10px",
+                                                        border: "1px solid #689ECA",
+                                                        fontFamily: "Nunito",
+                                                        color: "#4A5568",
+                                                        background: "white",
+                                                        cursor: "pointer",
+                                                        width: "100%",
+                                                        maxWidth: "135px",
+                                                        fontWeight: 700,
+                                                        margin: 0
+                                                    }}
+                                                >
+                                                    <option value="NONE">Авто (ИИ)</option>
+                                                    <option value="EASY">🔥 Легко</option>
+                                                    <option value="MEDIUM">🔥🔥 Средне</option>
+                                                    <option value="HARD">🔥🔥🔥 Сложно</option>
+                                                </select>
                                             </td>
                                             <td>
                                                 <div style={{ position: "relative", display: "inline-block", width: "100%", maxWidth: "160px" }}>
@@ -413,6 +556,44 @@ export default function ChildrenPage() {
                             </table>
                         </div>
                     )}
+
+                    <div className="children-list-wrapper" style={{ marginTop: "40px", padding: "30px" }}>
+                        <h3 style={{ fontFamily: "Nunito", fontSize: "18px", fontWeight: 800, color: "#2d3748", margin: "0 0 20px 0" }}>
+                            ⏰ Справочник лимитов времени по возрастным группам
+                        </h3>
+                        <div style={{ display: "flex", flexWrap: "nowrap", gap: "12px", width: "100%", overflowX: "auto", paddingBottom: "5px" }}>
+                            {ageGroups.map((age) => {
+                                const currentAgeMinutes = ageLimits[age] || "";
+                                return (
+                                    <div key={age} style={{ flex: "1 1 0", minWidth: "120px", background: "white", border: "1px solid rgba(104, 158, 202, 0.2)", borderRadius: "16px", padding: "12px", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", boxShadow: "0 4px 10px rgba(0,0,0,0.01)" }}>
+                                        <span style={{ fontFamily: "Nunito", fontSize: "13px", fontWeight: 700, color: "#4a5568", whiteSpace: "nowrap" }}>
+                                            {age === 5 ? "до 5 лет" : `до ${age} лет`}
+                                        </span>
+                                        <div style={{ display: "flex", alignItems: "center", gap: "4px", width: "100%" }}>
+                                            <input
+                                                type="number"
+                                                value={currentAgeMinutes}
+                                                placeholder="45"
+                                                min={0}
+                                                onChange={(e) => {
+                                                    const val = e.target.value === "" ? 0 : Math.max(0, Number(e.target.value));
+                                                    setAgeLimits(prev => ({ ...prev, [age]: val }));
+                                                }}
+                                                style={{ width: "100%", padding: "4px", height: "30px", textAlign: "center", borderRadius: "8px", border: "1px solid rgba(111,115,118,0.2)", fontSize: "13px", fontFamily: "Nunito", outline: "none", boxSizing: "border-box" }}
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => handleSaveAgeLimit(age, ageLimits[age] || 0)}
+                                                style={{ padding: "0 8px", borderRadius: "8px", height: "30px", fontSize: "12px", background: "#7FCA68", color: "white", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, boxSizing: "border-box" }}
+                                            >
+                                                ✓
+                                            </button>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
                 </div>
             </main>
             <Footer />

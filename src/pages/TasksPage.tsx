@@ -25,7 +25,7 @@ export default function TasksPage() {
     const [recommendedDifficulty, setRecommendedDifficulty] = useState<string | null>(null);
     const [parentTaskIds, setParentTaskIds] = useState<number[]>([]);
     const [recommendationMessage, setRecommendationMessage] = useState<string>("");
-
+    const [isParentDiff, setIsParentDiff] = useState<boolean>(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -44,15 +44,19 @@ export default function TasksPage() {
                 }
 
                 if (childId) {
-                    const adaptiveRes = await fetch(`http://localhost:8182/api/v1/analytics/recommendation/${childId}`, {
-                        headers: { Authorization: `Bearer ${token}` },
-                    });
-                    if (adaptiveRes.ok) {
-                        const adaptiveData = await adaptiveRes.json();
-                        setRecommendedDifficulty(adaptiveData.recommendedDifficulty);
-                        setRecommendationMessage(adaptiveData.message);
-                        setParentTaskIds(adaptiveData.parentTaskIds || []);
-                        setActiveTab("recommend");
+                    try {
+                        const adaptiveRes = await fetch(`http://localhost:8182/api/v1/analytics/recommendation/${childId}`, {
+                            headers: { Authorization: `Bearer ${token}` },
+                        });
+                        if (adaptiveRes.ok) {
+                            const adaptiveData = await adaptiveRes.json();
+                            setRecommendedDifficulty(adaptiveData.recommendedDifficulty || adaptiveData.difficulty);
+                            setRecommendationMessage(adaptiveData.message || "");
+                            setParentTaskIds(adaptiveData.parentTaskIds || []);
+                            setActiveTab("recommend");
+                        }
+                    } catch (err) {
+                        console.error("error", err)
                     }
                 }
             } catch (err) {
@@ -101,7 +105,7 @@ export default function TasksPage() {
 
     const filteredByTab = activeTab === "recommend"
         ? (parentTaskIds && parentTaskIds.length > 0
-            ? tasks.filter((t) => parentTaskIds.includes(t.id || 0))
+            ? tasks.filter((t) => parentTaskIds.includes(t.id || 0) && (t.difficulty === recommendedDifficulty))
             : tasks.filter((t) => t.difficulty === recommendedDifficulty))
         : tasks;
 
@@ -192,8 +196,7 @@ export default function TasksPage() {
                         ) : (
                             finalFilteredTasks.map((task) => {
                                 const isParentAssigned = parentTaskIds && parentTaskIds.includes(task.id || 0);
-                                const isAiRecommended = (!parentTaskIds || parentTaskIds.length === 0) && recommendedDifficulty === task.difficulty;
-                                const isRec = isParentAssigned || isAiRecommended;
+                                const isRec = isParentAssigned || (activeTab === "recommend") || (recommendedDifficulty === task.difficulty && !parentTaskIds.length && !isParentDiff);
 
                                 return (
                                     <div

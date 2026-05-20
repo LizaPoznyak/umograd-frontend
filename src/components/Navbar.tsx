@@ -52,7 +52,9 @@ export default function Navbar() {
     }
 
     const usernameFirstLetter = profile.username?.[0]?.toUpperCase() ?? "?";
-    const role = localStorage.getItem("role");
+    const tasksPath = Array.isArray(profile.roles) && profile.roles.includes("ROLE_MODERATOR")
+        ? "/tasks-admin"
+        : "/tasks";
     return (
         <header className="navbar">
             <div className="navigation">
@@ -64,9 +66,7 @@ export default function Navbar() {
 
                 <nav className="navbar-center">
                     <NavLink to={homePath} className="nav-item">Главная</NavLink>
-                    {role !== "MODERATOR" && (
-                        <NavLink to="/tasks-admin" className="nav-item">Задания</NavLink>
-                    )}
+                    <NavLink to={tasksPath} className="nav-item">Задания</NavLink>
                     <NavLink to="/achievements" className="nav-item">Достижения</NavLink>
                 </nav>
             </div>
