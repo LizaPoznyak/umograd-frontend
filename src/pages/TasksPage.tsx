@@ -25,7 +25,7 @@ export default function TasksPage() {
     const [recommendedDifficulty, setRecommendedDifficulty] = useState<string | null>(null);
     const [parentTaskIds, setParentTaskIds] = useState<number[]>([]);
     const [recommendationMessage, setRecommendationMessage] = useState<string>("");
-    const [isParentDiff, setIsParentDiff] = useState<boolean>(false);
+    const [isParentDiff] = useState<boolean>(false);
     const navigate = useNavigate();
 
     useEffect(() => {
