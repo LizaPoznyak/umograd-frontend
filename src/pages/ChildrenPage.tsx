@@ -67,7 +67,7 @@ export default function ChildrenPage() {
                 setCustomLimits(limitsMap);
             }
 
-            const ageRes = await fetch("http://localhost:8080/api/v1/analytics/limit/parent/limits", {
+            const ageRes = await fetch("http://localhost:8182/api/v1/analytics/limit/parent/limits", {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (ageRes.ok) {
@@ -455,7 +455,7 @@ export default function ChildrenPage() {
                                                         margin: 0
                                                     }}
                                                 >
-                                                    <option value="NONE">Авто (ИИ)</option>
+                                                    <option value="NONE">Авто</option>
                                                     <option value="EASY">🔥 Легко</option>
                                                     <option value="MEDIUM">🔥🔥 Средне</option>
                                                     <option value="HARD">🔥🔥🔥 Сложно</option>
