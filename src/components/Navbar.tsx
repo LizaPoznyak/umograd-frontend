@@ -1,17 +1,17 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
-import bellIcon from "../assets/notif.png";
+// import bellIcon from "../assets/notif.png";
 import menuDots from "../assets/menu.png";
-import closeIcon from "../assets/close.png";
+// import closeIcon from "../assets/close.png";
 import "./Navbar.css";
 import { useEffect, useRef, useState } from "react";
 import { useUser } from "../context/UserContext";
 
 export default function Navbar() {
     const navigate = useNavigate();
-    const [showNotif, setShowNotif] = useState(false);
+    // const [showNotif, setShowNotif] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
-    const notifRef = useRef<HTMLDivElement>(null);
+    // const notifRef = useRef<HTMLDivElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
 
     const { profile, setProfile } = useUser();
@@ -19,12 +19,12 @@ export default function Navbar() {
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
             if (
-                notifRef.current &&
-                !notifRef.current.contains(event.target as Node) &&
+                /*notifRef.current &&
+                !notifRef.current.contains(event.target as Node) &&*/
                 menuRef.current &&
                 !menuRef.current.contains(event.target as Node)
             ) {
-                setShowNotif(false);
+                // setShowNotif(false);
                 setShowMenu(false);
             }
         }
@@ -74,7 +74,7 @@ export default function Navbar() {
             <span className="brand">Умоград</span>
 
             <div className="navbar-right">
-                {/* Уведомления */}
+                {/* Уведомления
                 <div
                     ref={notifRef}
                     className={`notif-block ${showNotif ? "active" : ""}`}
@@ -97,7 +97,7 @@ export default function Navbar() {
                             ))}
                         </div>
                     )}
-                </div>
+                </div>*/}
 
                 {/* Профиль */}
                 <div className="profile-block" onClick={() => navigate("/profile")}>
@@ -114,7 +114,7 @@ export default function Navbar() {
                     <button
                         onClick={() => {
                             setShowMenu(!showMenu);
-                            setShowNotif(false);
+                            // setShowNotif(false);
                         }}
                         className={`logout-circle ${showMenu ? "active" : ""}`}
                     >

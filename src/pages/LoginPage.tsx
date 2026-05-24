@@ -91,8 +91,8 @@ export default function LoginPage() {
                                 required
                             />
                         </div>
-                        <div className="login-forgo-container">
-                        </div>
+                        {/*<div className="login-forgo-container">
+                        </div>*/}
                         <div className="login-actions">
                             <button type="submit" className="login-button" disabled={loading}>
                                 {loading ? "Вход..." : "Войти"}
